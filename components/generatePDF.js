@@ -203,39 +203,40 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         const isExcedent = globalRow[1] === 'Excédent';
         const bgColor = isExcedent ? [39, 174, 96] : [231, 76, 60];
         const percent = globalRow[2] ? globalRow[2].replace(/^[+-]/, "") : '';
-        const cellWidth = 50;
-        const cellHeight = 8;
-        const margin = 6;
+        const cellWidthLabel = 45;
+        const cellWidthResult = 50;
+        const cellHeight = 9;
         const arrow = "→";
         const label = `Résultat Global ${arrow}`;
-
-        // حساب عرض العنوان والسهم
-        pdf.setFontSize(9);
-        pdf.setFont(undefined, 'bold');
-        const labelWidth = pdf.getTextWidth(label);
+        const resultText = `${globalRow[1]}${percent ? ` (${percent})` : ""}`;
 
         // حساب موضع البداية بحيث يكون الكل في الوسط
-        const totalWidth = labelWidth + margin + cellWidth;
+        const totalWidth = cellWidthLabel + cellWidthResult;
         const xStart = (pageWidth - totalWidth) / 2;
-        const y = tableStartY + 4; // تقليل المسافة العلوية
+        const y = tableStartY + 4;
 
-        // العنوان والسهم في الوسط
+        // خانة العنوان (شفافة بلا إطار)
+        pdf.setFontSize(9);
         pdf.setTextColor(0, 0, 0);
-        pdf.text(label, xStart, y + cellHeight / 2 + 1.5, { align: 'left' });
+        pdf.setFont(undefined, 'bold');
+        pdf.text(
+          label,
+          xStart + cellWidthLabel / 2,
+          y + cellHeight / 2 + 2,
+          { align: 'center' }
+        );
 
-        // الخانة الملونة على يمين العنوان
-        const xCell = xStart + labelWidth + margin;
+        // خانة النتيجة الملونة
         pdf.setFillColor(...bgColor);
-        pdf.roundedRect(xCell, y, cellWidth, cellHeight, 2, 2, 'F');
+        pdf.roundedRect(xStart + cellWidthLabel, y, cellWidthResult, cellHeight, 2, 2, 'F');
 
-        // النتيجة بالأبيض داخل الخانة الملونة وبخط أصغر
         pdf.setFontSize(10);
         pdf.setTextColor(255, 255, 255);
         pdf.setFont(undefined, 'bold');
         pdf.text(
-          `${globalRow[1]}${percent ? ` (${percent})` : ""}`,
-          xCell + cellWidth / 2,
-          y + cellHeight / 2 + 1.5,
+          resultText,
+          xStart + cellWidthLabel + cellWidthResult / 2,
+          y + cellHeight / 2 + 2,
           { align: 'center' }
         );
 
