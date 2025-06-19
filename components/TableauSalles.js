@@ -223,42 +223,43 @@ export default function TableauSalles({
                 </select>
               </label>
             </div>
-            <table className="w-full table-auto border text-sm">
-              <thead className="bg-gray-200">
-                <tr>
-                  <th className="border p-2">Code</th>
-                  <th className="border p-2">Surface (m²)</th>
-                  <th className="border p-2">Surface Pédagogique</th>
-                  <th className="border p-2">Heures Max</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sallesType.map((salle, index) => (
-                  <tr key={index}>
-                    <td className="border p-2 text-center">{index + 1}</td>
-                    <td className="border p-2">
-                      <input
-                        type="number"
-                        value={salle.surface}
-                        onChange={e => handleChange(key, index, "surface", e.target.value)}
-                        className="w-full p-1 border rounded"
-                      />
-                    </td>
-                    <td className="border p-2 text-center">{salle.surfaceP}</td>
-                    <td className="border p-2 text-center">{salle.heuresMax}</td>
+            <div className="table-responsive" style={{ width: "100%", overflowX: "auto" }}>
+              <table className="table-compact">
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Surface (m²)</th>
+                    <th>Surface Pédagogique</th>
+                    <th>Heures Max</th>
                   </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr className="bg-gray-100 font-bold">
-                  <td className="border p-2 text-center" colSpan={2}>
-                    Moyenne / Somme
-                  </td>
-                  <td className="border p-2 text-center">{moyenneSurfaceP}</td>
-                  <td className="border p-2 text-center">{totalHeuresMax}</td>
-                </tr>
-              </tfoot>
-            </table>
+                </thead>
+                <tbody>
+                  {sallesType.map((salle, index) => (
+                    <tr key={index}>
+                      <td>{index + 1}</td>
+                      <td>
+                        <input
+                          type="number"
+                          value={salle.surface}
+                          onChange={e => handleChange(key, index, "surface", e.target.value)}
+                          className="w-16 p-1 border rounded"
+                          style={{ fontSize: "0.85rem" }}
+                        />
+                      </td>
+                      <td>{salle.surfaceP}</td>
+                      <td>{salle.heuresMax}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="font-bold bg-gray-100">
+                    <td colSpan={2}>Moyenne / Somme</td>
+                    <td>{moyenneSurfaceP}</td>
+                    <td>{totalHeuresMax}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
             <div className="flex gap-4 mt-4 justify-center">
               <button
                 className="bg-blue-500 text-white rounded px-3 py-1"

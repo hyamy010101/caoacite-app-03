@@ -56,7 +56,6 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
   const sumBesoinPratParSpec = besoinPratParSpecArr.reduce((a, b) => a + b, 0);
   const sumBesoinTpSpecParSpec = besoinTpSpecParSpecArr.reduce((a, b) => a + b, 0);
 
-  // تحديث النتائج للأب عند أي تغيير
   useEffect(() => {
     if (onDataChange) {
       onDataChange([
@@ -66,7 +65,7 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
           besoinTpSpecTotal: sumBesoinTpSpecParSpec,
           besoinTheoParGroupe: Number(avgBesoinTheoParGroupe),
           besoinPratParGroupe: Number(avgBesoinPratParGroupe),
-          besoinTpSpecParGroupe: Number(avgBesoinTpSpecParGroupe), // تم التأكد من تمرير القيمة بشكل صحيح
+          besoinTpSpecParGroupe: Number(avgBesoinTpSpecParGroupe),
         }
       ]);
     }
@@ -79,50 +78,54 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
   return (
     <div className="bg-white shadow rounded-2xl p-4 mb-8">
       <h2 className="text-xl font-bold text-gray-700 mb-4">Répartition</h2>
-      <table className="w-full table-auto border text-sm mb-4">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="border p-2">Spécialité</th>
-            <th className="border p-2">Besoin Théorique<br />par Groupe</th>
-            <th className="border p-2">Besoin Pratique<br />par Groupe</th>
-            <th className="border p-2">Besoin TP Spécifique<br />par Groupe</th>
-            <th className="border p-2">Besoin Théorique<br />par Spécialité</th>
-            <th className="border p-2">Besoin Pratique<br />par Spécialité</th>
-            <th className="border p-2">Besoin TP Spécifique<br />par Spécialité</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, idx) => {
-            const spec = findSpecialtyData(row.specialite);
-            const besoinTheoParSpecialite = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin Théorique par Groupe"] || 0);
-            const besoinPratParSpecialite = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin Pratique par Groupe"] || 0);
-            const besoinTpSpecParSpecialite = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP Spécifique par Groupe"] || 0);
+      <div className="table-responsive" style={{ width: "100%", overflowX: "auto" }}>
+        <table className="table-compact">
+          <thead>
+            <tr>
+              <th>Spécialité</th>
+              <th>Besoin Théorique<br />par Groupe</th>
+              <th>Besoin Pratique<br />par Groupe</th>
+              <th>Besoin TP Spécifique<br />par Groupe</th>
+              <th>Besoin Théorique<br />par Spécialité</th>
+              <th>Besoin Pratique<br />par Spécialité</th>
+              <th>Besoin TP Spécifique<br />par Spécialité</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, idx) => {
+              const spec = findSpecialtyData(row.specialite);
+              const besoinTheoParSpecialite = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin Théorique par Groupe"] || 0);
+              const besoinPratParSpecialite = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin Pratique par Groupe"] || 0);
+              const besoinTpSpecParSpecialite = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP Spécifique par Groupe"] || 0);
 
-            return (
-              <tr key={idx}>
-                <td className="border p-2">{row.specialite || ""}</td>
-                <td className="border p-2 text-center">{spec["Besoin Théorique par Groupe"] || ""}</td>
-                <td className="border p-2 text-center">{spec["Besoin Pratique par Groupe"] || ""}</td>
-                <td className="border p-2 text-center">{spec["Besoin TP Spécifique par Groupe"] || ""}</td>
-                <td className="border p-2 text-center">{besoinTheoParSpecialite}</td>
-                <td className="border p-2 text-center">{besoinPratParSpecialite}</td>
-                <td className="border p-2 text-center">{besoinTpSpecParSpecialite}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td className="border p-2 font-bold text-right"> Moyenne / Somme</td>
-            <td className="border p-2 text-center font-bold">{avgBesoinTheoParGroupe}</td>
-            <td className="border p-2 text-center font-bold">{avgBesoinPratParGroupe}</td>
-            <td className="border p-2 text-center font-bold">{avgBesoinTpSpecParGroupe}</td>
-            <td className="border p-2 text-center font-bold">{sumBesoinTheoParSpec}</td>
-            <td className="border p-2 text-center font-bold">{sumBesoinPratParSpec}</td>
-            <td className="border p-2 text-center font-bold">{sumBesoinTpSpecParSpec}</td>
-          </tr>
-        </tfoot>
-      </table>
+              return (
+                <tr key={idx}>
+                  <td>
+                    {row.specialite || ""}
+                  </td>
+                  <td className="text-center">{spec["Besoin Théorique par Groupe"] || ""}</td>
+                  <td className="text-center">{spec["Besoin Pratique par Groupe"] || ""}</td>
+                  <td className="text-center">{spec["Besoin TP Spécifique par Groupe"] || ""}</td>
+                  <td className="text-center">{besoinTheoParSpecialite}</td>
+                  <td className="text-center">{besoinPratParSpecialite}</td>
+                  <td className="text-center">{besoinTpSpecParSpecialite}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td className="font-bold text-right">Moyenne / Somme</td>
+              <td className="text-center font-bold">{avgBesoinTheoParGroupe}</td>
+              <td className="text-center font-bold">{avgBesoinPratParGroupe}</td>
+              <td className="text-center font-bold">{avgBesoinTpSpecParGroupe}</td>
+              <td className="text-center font-bold">{sumBesoinTheoParSpec}</td>
+              <td className="text-center font-bold">{sumBesoinPratParSpec}</td>
+              <td className="text-center font-bold">{sumBesoinTpSpecParSpec}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
     </div>
   );
 }

@@ -41,7 +41,6 @@ export default function TableauResultats({ data }) {
   const testGlobal = etatTheo === 'Excédent' && etatPrat === 'Excédent' && etatTpSpec === 'Excédent' ? 'Excédent' : 'Dépassement';
   const couleurGlobal = testGlobal === 'Excédent' ? 'text-green-600' : 'text-red-600';
 
-  // --- الفلترة: لا يعرض صف النوع إذا كان معدل المساحة البيداغوجية = 0 ---
   const rows = [];
   if (moyenneSurfaceTheo > 0) {
     rows.push({
@@ -71,33 +70,34 @@ export default function TableauResultats({ data }) {
   return (
     <div className="bg-white shadow rounded-2xl p-4 mb-8">
       <h2 className="text-xl font-bold text-gray-700 mb-4">Résultats</h2>
-      <table className="w-full table-auto border text-sm mb-4">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="border p-2">Type</th>
-            <th className="border p-2">Heures restantes</th>
-            <th className="border p-2">Apprenants possibles</th>
-            <th className="border p-2">État</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, i) => (
-            <tr key={i}>
-              <td className="border p-2">{row.label}</td>
-              <td className="border p-2 text-center">{row.heures}</td>
-              <td className="border p-2 text-center">{row.apprenants}</td>
-              <td className={`border p-2 text-center font-semibold ${row.etat === 'Excédent' ? 'text-green-600' : 'text-red-600'}`}>
-                {row.etat}
-              </td>
+      <div className="table-responsive" style={{ width: "100%", overflowX: "auto" }}>
+        <table className="table-compact">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Heures restantes</th>
+              <th>Apprenants possibles</th>
+              <th>État</th>
             </tr>
-          ))}
-          {/* السطر الأخير */}
-          <tr className="font-bold">
-            <td className="border p-2 text-center" colSpan="3">Résultat Global</td>
-            <td className={`border p-2 text-center ${couleurGlobal}`}>{testGlobal}</td>
-          </tr>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => (
+              <tr key={i}>
+                <td style={{ fontSize: "0.85rem" }}>{row.label}</td>
+                <td className="text-center" style={{ fontSize: "0.85rem" }}>{row.heures}</td>
+                <td className="text-center" style={{ fontSize: "0.85rem" }}>{row.apprenants}</td>
+                <td className={`text-center font-semibold ${row.etat === 'Excédent' ? 'text-green-600' : 'text-red-600'}`} style={{ fontSize: "0.85rem" }}>
+                  {row.etat}
+                </td>
+              </tr>
+            ))}
+            <tr className="font-bold">
+              <td className="text-center" colSpan="3" style={{ fontSize: "0.85rem" }}>Résultat Global</td>
+              <td className={`text-center ${couleurGlobal}`} style={{ fontSize: "0.85rem" }}>{testGlobal}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
