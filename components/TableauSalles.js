@@ -33,7 +33,6 @@ export default function TableauSalles({
   apprenants,
   setApprenants
 }) {
-  // تأكد عند أول تشغيل أن كل جدول فيه صف واحد على الأقل
   React.useEffect(() => {
     let changed = false;
     const newSalles = { ...salles };
@@ -47,7 +46,6 @@ export default function TableauSalles({
     // eslint-disable-next-line
   }, []);
 
-  // تغيير حقل داخل صف
   const handleChange = (type, index, field, value) => {
     setSalles(prev => {
       const arr = prev[type].slice();
@@ -65,7 +63,6 @@ export default function TableauSalles({
     });
   };
 
-  // تحديث القيم العامة (تؤثر على كل صفوف الجدول فقط)
   const updateCno = (type, value) => {
     setCnos(prev => ({ ...prev, [type]: value }));
     setSalles(prev => {
@@ -104,7 +101,6 @@ export default function TableauSalles({
     });
   };
 
-  // تحديث apprenants (عدد المتعلمين الأقصى لـ Surface Pédagogique)
   const updateApprenants = (type, value) => {
     setApprenants(prev => ({ ...prev, [type]: value }));
     setSalles(prev => {
@@ -120,7 +116,6 @@ export default function TableauSalles({
     });
   };
 
-  // إضافة صف جديد بشكل مستقل لكل جدول
   const ajouterSalle = (type) => {
     setSalles(prev => ({
       ...prev,
@@ -131,14 +126,12 @@ export default function TableauSalles({
     }));
   };
 
-  // زر الإلغاء: إذا أكثر من صف يحذف الأخير، إذا صف واحد فقط يفرغه
   const annulerModification = (type) => {
     setSalles(prev => {
       const arr = prev[type];
       if (arr.length > 1) {
         return { ...prev, [type]: arr.slice(0, -1) };
       } else {
-        // صف واحد فقط: أفرغ surface فقط
         return {
           ...prev,
           [type]: [
@@ -155,16 +148,13 @@ export default function TableauSalles({
   };
 
   const heuresOptions = [40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60];
-
-  // --- تصحيح cnoOptions: أرقام وليس نصوص حتى تعمل كل الخيارات بشكل صحيح ---
   const cnoOptions = Array.from({ length: 21 }, (_, i) => +(1 + i * 0.1));
   const semainesOptions = Array.from({ length: 100 }, (_, i) => i + 1);
-  const apprenantsOptions = Array.from({ length: 21 }, (_, i) => 10 + i); // 10 إلى 30
+  const apprenantsOptions = Array.from({ length: 21 }, (_, i) => 10 + i);
 
   return (
     <div className="flex gap-4 w-full">
       {salleTitles.map(({ key, label }) => {
-        // إذا لم يوجد صفوف (حالة نادرة بسبب useEffect) ضع صف افتراضي
         const sallesType = salles[key] && salles[key].length > 0
           ? salles[key]
           : [defaultSalle(cnos[key], semaines[key], heures[key], apprenants[key])];
@@ -173,49 +163,53 @@ export default function TableauSalles({
         return (
           <div className="bg-white shadow rounded-2xl p-4 mb-8 flex-1" key={key}>
             <h2 className="text-xl font-bold text-gray-700 mb-4">{label}</h2>
-            <div style={{ marginBottom: 16, display: "flex", gap: "2rem" }}>
-              <label>
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <label className="text-xs mr-1">
                 CNO:
                 <select
                   value={cnos[key]}
                   onChange={e => updateCno(key, Number(e.target.value))}
-                  style={{ marginLeft: 8, width: 80 }}
+                  className="text-xs px-2 py-1 h-7 border rounded ml-1"
+                  style={{ width: 65 }}
                 >
                   {cnoOptions.map(opt => (
                     <option key={opt} value={opt}>{opt.toFixed(1)}</option>
                   ))}
                 </select>
               </label>
-              <label>
+              <label className="text-xs mx-1">
                 Semaines:
                 <select
                   value={semaines[key]}
                   onChange={e => updateSemaines(key, Number(e.target.value))}
-                  style={{ marginLeft: 8, width: 80 }}
+                  className="text-xs px-2 py-1 h-7 border rounded ml-1"
+                  style={{ width: 65 }}
                 >
                   {semainesOptions.map(opt => (
                     <option key={opt} value={opt}>{opt}</option>
                   ))}
                 </select>
               </label>
-              <label>
+              <label className="text-xs mx-1">
                 Heures:
                 <select
                   value={heures[key]}
                   onChange={e => updateHeures(key, Number(e.target.value))}
-                  style={{ marginLeft: 8, width: 80 }}
+                  className="text-xs px-2 py-1 h-7 border rounded ml-1"
+                  style={{ width: 65 }}
                 >
                   {heuresOptions.map(opt => (
                     <option key={opt} value={opt}>{opt}</option>
                   ))}
                 </select>
               </label>
-              <label>
+              <label className="text-xs mx-1">
                 Apprenants:
                 <select
                   value={apprenants[key]}
                   onChange={e => updateApprenants(key, Number(e.target.value))}
-                  style={{ marginLeft: 8, width: 80 }}
+                  className="text-xs px-2 py-1 h-7 border rounded ml-1"
+                  style={{ width: 65 }}
                 >
                   {apprenantsOptions.map(opt => (
                     <option key={opt} value={opt}>{opt}</option>
