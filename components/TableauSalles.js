@@ -153,7 +153,7 @@ export default function TableauSalles({
   const apprenantsOptions = Array.from({ length: 21 }, (_, i) => 10 + i);
 
   return (
-    <div className="flex gap-4 w-full">
+    <div className="flex flex-col items-center w-full">
       {salleTitles.map(({ key, label }) => {
         const sallesType = salles[key] && salles[key].length > 0
           ? salles[key]
@@ -161,16 +161,16 @@ export default function TableauSalles({
         const totalHeuresMax = sommeColonne(sallesType.map(s => Number(s.heuresMax) || 0));
         const moyenneSurfaceP = moyenneColonne(sallesType.map(s => Number(s.surfaceP) || 0));
         return (
-          <div className="bg-white shadow rounded-2xl p-4 mb-8 flex-1" key={key}>
-            <h2 className="text-xl font-bold text-gray-700 mb-4">{label}</h2>
-            <div className="mb-2">
-              <div className="flex gap-2 mb-1">
+          <div className="bg-white shadow rounded-2xl p-4 mb-8 w-full max-w-md" key={key}>
+            <h2 className="text-xl font-bold text-gray-700 mb-4 text-center">{label}</h2>
+            <div className="mb-2 flex flex-col items-center">
+              <div className="flex gap-2 mb-1 justify-center">
                 <span className="text-xs w-16 text-center">CNO</span>
                 <span className="text-xs w-16 text-center">Semaines</span>
                 <span className="text-xs w-16 text-center">Heures</span>
                 <span className="text-xs w-20 text-center">Apprenants</span>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 justify-center">
                 <select
                   value={cnos[key]}
                   onChange={e => updateCno(key, Number(e.target.value))}
@@ -209,22 +209,14 @@ export default function TableauSalles({
                 </select>
               </div>
             </div>
-            <div className="table-responsive" style={{ width: "100%", overflowX: "auto" }}>
+            <div className="table-responsive flex justify-center" style={{ width: "100%", overflowX: "auto" }}>
               <table className="table-compact">
                 <thead>
                   <tr>
-                    <th>
-                      Code
-                    </th>
-                    <th>
-                      Surface<br /> (m²)
-                    </th>
-                    <th>
-                      Surface<br /> Pédagogique
-                    </th>
-                    <th>
-                      Heures<br /> Max
-                    </th>
+                    <th>Code</th>
+                    <th>Surface<br />(m²)</th>
+                    <th>Surface<br />Pédagogique</th>
+                    <th>Heures<br />Max</th>
                   </tr>
                 </thead>
                 <tbody>
