@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   calculerSurfacePedagogique,
   calculerHeuresMax,
@@ -36,6 +36,15 @@ export default function TableauSalles({
   apprenants,
   setApprenants
 }) {
+  // حالة إظهار الجداول
+  const [visibleTables, setVisibleTables] = useState({
+    theorie: true,
+    pratique: true,
+    tpSpecifiques: true,
+    tp2: false,
+    tp3: false,
+  });
+
   React.useEffect(() => {
     let changed = false;
     const newSalles = { ...salles };
@@ -155,9 +164,32 @@ export default function TableauSalles({
   const semainesOptions = Array.from({ length: 100 }, (_, i) => i + 1);
   const apprenantsOptions = Array.from({ length: 21 }, (_, i) => 10 + i);
 
+  // قائمة اختيار الجداول
+  const handleTableCheck = (key) => {
+    setVisibleTables(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
   return (
     <div className="flex flex-col items-center w-full">
-      {salleTitles.map(({ key, label }) => {
+      {/* قائمة اختيار الجداول */}
+      <div className="flex flex-wrap gap-4 mb-4 items-center justify-center">
+        {salleTitles.map(({ key, label }) => (
+          <label key={key} className="flex items-center gap-1 text-xs">
+            <input
+              type="checkbox"
+              checked={!!visibleTables[key]}
+              onChange={() => handleTableCheck(key)}
+              className="accent-blue-500"
+            />
+            {label}
+          </label>
+        ))}
+      </div>
+      {/* عرض الجداول المختارة فقط */}
+      {salleTitles.filter(({ key }) => visibleTables[key]).map(({ key, label }) => {
         const sallesType = salles[key] && salles[key].length > 0
           ? salles[key]
           : [defaultSalle(cnos[key], semaines[key], heures[key], apprenants[key])];
