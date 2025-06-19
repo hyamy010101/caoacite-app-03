@@ -171,15 +171,16 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
           if (colIdx === 3) {
             const isExcedent = cell === 'Excédent';
             const color = isExcedent ? [39, 174, 96] : [231, 76, 60];
-            const percent = row[4] ? ` (${row[4]})` : '';
+            // لا تضف النسبة هنا إطلاقًا
             return {
-              content: cell + percent,
+              content: cell,
               styles: {
                 textColor: color,
                 fontStyle: 'bold'
               }
             };
           }
+          // تجاهل عمود النسبة في الصفوف العادية
           if (colIdx === 4) return { content: "" };
           return { content: cell };
         })
@@ -203,7 +204,8 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
       if (globalRow) {
         const isExcedent = globalRow[1] === 'Excédent';
         const color = isExcedent ? [39, 174, 96] : [231, 76, 60];
-        const percent = globalRow[2] ? ` (${globalRow[2]})` : '';
+        // النسبة بدون أي علامة
+        const percent = globalRow[2] ? ` (${globalRow[2].replace(/^[+-]/, "")})` : '';
         pdf.setFontSize(13);
         pdf.setTextColor(...color);
         pdf.setFont(undefined, 'bold');
