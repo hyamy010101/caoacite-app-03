@@ -9,8 +9,8 @@ import {
 // أضف TP2 وTP3
 const salleTitles = [
   { key: "theorie", label: "Salles Théorie" },
-  { key: "pratique", label: "Salles Pratique" },
-  { key: "tpSpecifiques", label: "Salles TP Spécifiques" },
+  { key: "pratique", label: "Salle Info" },           // تم التغيير هنا
+  { key: "tpSpecifiques", label: "Salles TP1" },      // تم التغيير هنا
   { key: "tp2", label: "Salles TP2" },
   { key: "tp3", label: "Salles TP3" },
 ];
