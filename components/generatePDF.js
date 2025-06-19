@@ -171,7 +171,6 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
           if (colIdx === 3) {
             const isExcedent = cell === 'Excédent';
             const color = isExcedent ? [39, 174, 96] : [231, 76, 60];
-            // لا تضف النسبة هنا إطلاقًا
             return {
               content: cell,
               styles: {
@@ -180,7 +179,6 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
               }
             };
           }
-          // تجاهل عمود النسبة في الصفوف العادية
           if (colIdx === 4) return { content: "" };
           return { content: cell };
         })
@@ -195,29 +193,45 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         headStyles: { fillColor: [155, 89, 182] },
         margin: { left: 14, right: 14 },
       });
-      tableStartY = pdf.lastAutoTable.finalY + 10;
+      tableStartY = pdf.lastAutoTable.finalY + 2; // تقليل المسافة بعد الجدول
 
-      // --- Résultat Global خارج الجدول ---
+      // --- Résultat Global مباشرة بعد الجدول ---
       const globalRow = resultatsTable.rows.find(
         row => row[0] && typeof row[0] === "object" && row[0].value === "Résultat Global"
       );
       if (globalRow) {
         const isExcedent = globalRow[1] === 'Excédent';
-        const color = isExcedent ? [39, 174, 96] : [231, 76, 60];
-        // النسبة بدون أي علامة
-        const percent = globalRow[2] ? ` (${globalRow[2].replace(/^[+-]/, "")})` : '';
-        pdf.setFontSize(13);
-        pdf.setTextColor(...color);
+        const bgColor = isExcedent ? [39, 174, 96] : [231, 76, 60];
+        const percent = globalRow[2] ? globalRow[2].replace(/^[+-]/, "") : '';
+        const cellWidth = 60;
+        const cellHeight = 10;
+        const x = (pageWidth - cellWidth) / 2;
+        const y = tableStartY + 2;
+
+        // رسم خلفية ملونة
+        pdf.setFillColor(...bgColor);
+        pdf.roundedRect(x, y, cellWidth, cellHeight, 2, 2, 'F');
+
+        // Résultat Global بالأسود
+        pdf.setFontSize(11);
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFont(undefined, 'bold');
+        pdf.text('Résultat Global', x + 5, y + 6.5);
+
+        // النتيجة النهائية بالأبيض داخل الخلفية الملونة
+        pdf.setFontSize(12);
+        pdf.setTextColor(255, 255, 255);
         pdf.setFont(undefined, 'bold');
         pdf.text(
-          `Résultat Global : ${globalRow[1]}${percent}`,
-          pageWidth / 2,
-          tableStartY + 8,
-          { align: 'center' }
+          `${globalRow[1]}${percent ? ` (${percent})` : ""}`,
+          x + cellWidth - 5,
+          y + 6.5,
+          { align: 'right' }
         );
+
         pdf.setTextColor(0, 0, 0);
         pdf.setFont(undefined, 'normal');
-        tableStartY += 16;
+        tableStartY += cellHeight + 4;
       }
 
       // --- النص التوضيحي أسفل النتائج ---
