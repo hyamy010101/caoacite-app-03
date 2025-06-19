@@ -189,115 +189,117 @@ export default function TableauSalles({
         ))}
       </div>
       {/* عرض الجداول المختارة فقط */}
-      {salleTitles.filter(({ key }) => visibleTables[key]).map(({ key, label }) => {
-        const sallesType = salles[key] && salles[key].length > 0
-          ? salles[key]
-          : [defaultSalle(cnos[key], semaines[key], heures[key], apprenants[key])];
-        const totalHeuresMax = sommeColonne(sallesType.map(s => Number(s.heuresMax) || 0));
-        const moyenneSurfaceP = moyenneColonne(sallesType.map(s => Number(s.surfaceP) || 0));
-        return (
-          <div className="bg-white shadow rounded-2xl p-4 mb-8 w-full max-w-md" key={key}>
-            <h2 className="text-xl font-bold text-gray-700 mb-4 text-center">{label}</h2>
-            <div className="mb-2 flex flex-col items-center">
-              <div className="flex gap-2 mb-1 justify-center">
-                <span className="text-xs w-16 text-center">CNO</span>
-                <span className="text-xs w-16 text-center">Semaines</span>
-                <span className="text-xs w-16 text-center">Heures</span>
-                <span className="text-xs w-20 text-center">Apprenants</span>
+      <div className="flex flex-wrap justify-center gap-6 w-full">
+        {salleTitles.filter(({ key }) => visibleTables[key]).map(({ key, label }) => {
+          const sallesType = salles[key] && salles[key].length > 0
+            ? salles[key]
+            : [defaultSalle(cnos[key], semaines[key], heures[key], apprenants[key])];
+          const totalHeuresMax = sommeColonne(sallesType.map(s => Number(s.heuresMax) || 0));
+          const moyenneSurfaceP = moyenneColonne(sallesType.map(s => Number(s.surfaceP) || 0));
+          return (
+            <div className="bg-white shadow rounded-2xl p-4 mb-8 max-w-md w-full sm:w-[370px] flex-shrink-0" key={key}>
+              <h2 className="text-xl font-bold text-gray-700 mb-4 text-center">{label}</h2>
+              <div className="mb-2 flex flex-col items-center">
+                <div className="flex gap-2 mb-1 justify-center">
+                  <span className="text-xs w-16 text-center">CNO</span>
+                  <span className="text-xs w-16 text-center">Semaines</span>
+                  <span className="text-xs w-16 text-center">Heures</span>
+                  <span className="text-xs w-20 text-center">Apprenants</span>
+                </div>
+                <div className="flex gap-2 justify-center">
+                  <select
+                    value={cnos[key]}
+                    onChange={e => updateCno(key, Number(e.target.value))}
+                    className="text-xs px-2 py-1 h-7 border rounded w-16 text-center"
+                  >
+                    {cnoOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt.toFixed(1)}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={semaines[key]}
+                    onChange={e => updateSemaines(key, Number(e.target.value))}
+                    className="text-xs px-2 py-1 h-7 border rounded w-16 text-center"
+                  >
+                    {semainesOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={heures[key]}
+                    onChange={e => updateHeures(key, Number(e.target.value))}
+                    className="text-xs px-2 py-1 h-7 border rounded w-16 text-center"
+                  >
+                    {heuresOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={apprenants[key]}
+                    onChange={e => updateApprenants(key, Number(e.target.value))}
+                    className="text-xs px-2 py-1 h-7 border rounded w-20 text-center"
+                  >
+                    {apprenantsOptions.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <div className="flex gap-2 justify-center">
-                <select
-                  value={cnos[key]}
-                  onChange={e => updateCno(key, Number(e.target.value))}
-                  className="text-xs px-2 py-1 h-7 border rounded w-16 text-center"
-                >
-                  {cnoOptions.map(opt => (
-                    <option key={opt} value={opt}>{opt.toFixed(1)}</option>
-                  ))}
-                </select>
-                <select
-                  value={semaines[key]}
-                  onChange={e => updateSemaines(key, Number(e.target.value))}
-                  className="text-xs px-2 py-1 h-7 border rounded w-16 text-center"
-                >
-                  {semainesOptions.map(opt => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
-                <select
-                  value={heures[key]}
-                  onChange={e => updateHeures(key, Number(e.target.value))}
-                  className="text-xs px-2 py-1 h-7 border rounded w-16 text-center"
-                >
-                  {heuresOptions.map(opt => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
-                <select
-                  value={apprenants[key]}
-                  onChange={e => updateApprenants(key, Number(e.target.value))}
-                  className="text-xs px-2 py-1 h-7 border rounded w-20 text-center"
-                >
-                  {apprenantsOptions.map(opt => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="table-responsive flex justify-center" style={{ width: "100%", overflowX: "auto" }}>
-              <table className="table-compact">
-                <thead>
-                  <tr>
-                    <th>Code</th>
-                    <th>Surface<br />(m²)</th>
-                    <th>Surface<br />Pédagogique</th>
-                    <th>Heures<br />Max</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sallesType.map((salle, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>
-                        <input
-                          type="number"
-                          value={salle.surface}
-                          onChange={e => handleChange(key, index, "surface", e.target.value)}
-                          className="w-16 p-1 border rounded"
-                          style={{ fontSize: "0.85rem" }}
-                        />
-                      </td>
-                      <td>{salle.surfaceP}</td>
-                      <td>{salle.heuresMax}</td>
+              <div className="table-responsive flex justify-center" style={{ width: "100%", overflowX: "auto" }}>
+                <table className="table-compact">
+                  <thead>
+                    <tr>
+                      <th>Code</th>
+                      <th>Surface<br />(m²)</th>
+                      <th>Surface<br />Pédagogique</th>
+                      <th>Heures<br />Max</th>
                     </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="font-bold bg-gray-100">
-                    <td colSpan={2}>Moyenne / Somme</td>
-                    <td>{moyenneSurfaceP}</td>
-                    <td>{totalHeuresMax}</td>
-                  </tr>
-                </tfoot>
-              </table>
+                  </thead>
+                  <tbody>
+                    {sallesType.map((salle, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>
+                          <input
+                            type="number"
+                            value={salle.surface}
+                            onChange={e => handleChange(key, index, "surface", e.target.value)}
+                            className="w-16 p-1 border rounded"
+                            style={{ fontSize: "0.85rem" }}
+                          />
+                        </td>
+                        <td>{salle.surfaceP}</td>
+                        <td>{salle.heuresMax}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="font-bold bg-gray-100">
+                      <td colSpan={2}>Moyenne / Somme</td>
+                      <td>{moyenneSurfaceP}</td>
+                      <td>{totalHeuresMax}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <div className="flex gap-4 mt-4 justify-center">
+                <button
+                  className="bg-blue-500 text-white rounded px-3 py-1"
+                  onClick={() => ajouterSalle(key)}
+                >
+                  Ajouter salle
+                </button>
+                <button
+                  className="bg-gray-300 text-gray-700 rounded px-3 py-1"
+                  onClick={() => annulerModification(key)}
+                >
+                  Annuler
+                </button>
+              </div>
             </div>
-            <div className="flex gap-4 mt-4 justify-center">
-              <button
-                className="bg-blue-500 text-white rounded px-3 py-1"
-                onClick={() => ajouterSalle(key)}
-              >
-                Ajouter salle
-              </button>
-              <button
-                className="bg-gray-300 text-gray-700 rounded px-3 py-1"
-                onClick={() => annulerModification(key)}
-              >
-                Annuler
-              </button>
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
