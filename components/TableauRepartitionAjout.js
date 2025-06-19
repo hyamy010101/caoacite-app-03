@@ -14,7 +14,7 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
       }))
     : [{ specialite: "", groupes: 0, apprenants: 0 }];
 
-  // ترتيب الأعمدة: Théorie, Info, TP1, TP2, TP3
+  // ترتيب الأعمدة حسب الطلب: Théorie, Info, TP1, TP2, TP3
   const besoinTheorieArr = rows.map(row => {
     const spec = findSpecialtyData(row.specialite);
     return calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin Théorique par Groupe"] || 0);
@@ -57,18 +57,6 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
   }, [
     sumBesoinTheorie, sumBesoinInfo, sumBesoinTP1, sumBesoinTP2, sumBesoinTP3, onDataChange
   ]);
-
-  const handleRepartitionChange = (repData) => {
-    const r = Array.isArray(repData) && repData.length > 0 ? repData[0] : {};
-    setRepartition({
-      besoinTheoTotal: r.besoinTheorieTotal ?? 0,
-      besoinPratTotal: r.besoinInfoTotal ?? 0,
-      besoinTpSpecTotal: r.besoinTP1Total ?? 0,
-      besoinTp2Total: r.besoinTP2Total ?? 0,
-      besoinTp3Total: r.besoinTP3Total ?? 0,
-      // ... المتوسطات إذا احتجتها ...
-    });
-  };
 
   return (
     <div className="bg-white shadow rounded-2xl p-4 mb-8">
