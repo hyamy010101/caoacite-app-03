@@ -275,11 +275,11 @@ export default function TDP() {
   const handleRepartitionChange = (repData) => {
     const r = (Array.isArray(repData) && repData.length > 0) ? repData[0] : {};
     setRepartition({
-      besoinTheoTotal: r.besoinTheoTotal ?? 0,
-      besoinPratTotal: r.besoinPratTotal ?? 0,
-      besoinTpSpecTotal: r.besoinTpSpecTotal ?? 0,
-      besoinTp2Total: r.besoinTp2Total ?? 0,
-      besoinTp3Total: r.besoinTp3Total ?? 0,
+      besoinTheoTotal: r.besoinTheorieTotal ?? 0,
+      besoinPratTotal: r.besoinInfoTotal ?? 0,
+      besoinTpSpecTotal: r.besoinTP1Total ?? 0,
+      besoinTp2Total: r.besoinTP2Total ?? 0,
+      besoinTp3Total: r.besoinTP3Total ?? 0,
       moyenneTheo: r.besoinTheoParGroupe ?? 0,
       moyennePrat: r.besoinPratParGroupe ?? 0,
       moyenneTpSpec: r.besoinTpSpecParGroupe ?? 0,
