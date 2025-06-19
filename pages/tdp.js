@@ -13,7 +13,6 @@ function calculerPourcentageLigne(heuresRestantes, heuresDisponibles, etat) {
   return etat === "Excédent" ? `+${percent}%` : `-${percent}%`;
 }
 
-// دوال مساعدة مباشرة
 const moyenne = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
 const somme = arr => arr.reduce((a, b) => a + b, 0);
 
@@ -123,6 +122,32 @@ export default function TDP() {
     const min = Math.min(...percentValues);
     percentGlobal = (testGlobal === "Excédent" ? "+" : "-") + Math.abs(min) + "%";
   }
+
+  // تعريف resultatsData قبل أي استخدام له
+  const resultatsData = {
+    totalHeuresTheo,
+    totalHeuresPrat,
+    totalHeuresTpSpec,
+    besoinTheoTotal: repartition.besoinTheoTotal,
+    besoinPratTotal: repartition.besoinPratTotal,
+    besoinTpSpecTotal: repartition.besoinTpSpecTotal,
+    moyenneBesoinTheo: repartition.moyenneTheo,
+    moyenneBesoinPrat: repartition.moyennePrat,
+    moyenneBesoinTpSpec: repartition.moyenneTpSpec,
+    moyenneSurfaceTheo,
+    moyenneSurfacePrat,
+    moyenneSurfaceTpSpec,
+    heuresRestantesTheo,
+    heuresRestantesPrat,
+    heuresRestantesTpSpec,
+    apprenantsPossiblesTheo,
+    apprenantsPossiblesPrat,
+    apprenantsPossiblesTpSpec,
+    etatTheo,
+    etatPrat,
+    etatTpSpec,
+    testGlobal
+  };
 
   const resultatsRows = [];
   if (moyenneSurfaceTheo > 0)

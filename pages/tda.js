@@ -1,15 +1,25 @@
 import { useRef, useState, useEffect } from "react";
 import TableauSalles from "../components/TableauSalles";
-import TableauEffectifAjout from "../components/TableauEffectifAjout";
-import TableauRepartitionAjout from "../components/TableauRepartitionAjout";
+import TableauEffectif from "../components/TableauEffectif";
+import TableauRepartition from "../components/TableauRepartition";
 import TableauResultats from "../components/TableauResultats";
 import useSpecialties from "../components/useSpecialties";
 import { generatePDF } from "../components/generatePDF";
+import {
+  calculerHeuresRestantes,
+  calculerApprenantsPossibles,
+  determinerEtat,
+} from "../utils/calculs";
 
-// دوال مساعدة مباشرة
+// دالة لحساب النسبة لكل سطر
+function calculerPourcentageLigne(heuresRestantes, heuresDisponibles, etat) {
+  if (!heuresDisponibles || isNaN(heuresRestantes)) return "";
+  const percent = Math.abs(Math.round((heuresRestantes / heuresDisponibles) * 100));
+  return etat === "Excédent" ? `+${percent}%` : `-${percent}%`;
+}
+
 const moyenne = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
 const somme = arr => arr.reduce((a, b) => a + b, 0);
-
 const defaultSalle = (cno, semaines, heures) => ({
   surface: "",
   cno,
@@ -19,40 +29,18 @@ const defaultSalle = (cno, semaines, heures) => ({
   heuresMax: Math.round(semaines * heures),
 });
 
-export default function TDP() {
+export default function TDA() {
   const pdfRef = useRef();
-
   const [salles, setSalles] = useState({
     theorie: [defaultSalle(1.0, 72, 56)],
     pratique: [defaultSalle(1.0, 72, 56)],
     tpSpecifiques: [defaultSalle(1.0, 72, 56)],
   });
-
-  const [cnos, setCnos] = useState({
-    theorie: 1.0,
-    pratique: 1.0,
-    tpSpecifiques: 1.0,
-  });
-  const [semaines, setSemaines] = useState({
-    theorie: 72,
-    pratique: 72,
-    tpSpecifiques: 72,
-  });
-  const [heures, setHeures] = useState({
-    theorie: 56,
-    pratique: 56,
-    tpSpecifiques: 56,
-  });
-
-  const [apprenants, setApprenants] = useState({
-    theorie: 26,
-    pratique: 26,
-    tpSpecifiques: 26,
-  });
-
-  const [effectif, setEffectif] = useState([
-    { specialite: "", groupes: 0, groupesAjout: 0, apprenants: 0 }
-  ]);
+  const [cnos, setCnos] = useState({ theorie: 1.0, pratique: 1.0, tpSpecifiques: 1.0 });
+  const [semaines, setSemaines] = useState({ theorie: 72, pratique: 72, tpSpecifiques: 72 });
+  const [heures, setHeures] = useState({ theorie: 56, pratique: 56, tpSpecifiques: 56 });
+  const [apprenants, setApprenants] = useState({ theorie: 26, pratique: 26, tpSpecifiques: 26 });
+  const [effectif, setEffectif] = useState([{ specialite: "", groupes: 0, apprenants: 0 }]);
   const [repartition, setRepartition] = useState({
     besoinTheoTotal: 0,
     besoinPratTotal: 0,
@@ -61,7 +49,18 @@ export default function TDP() {
     moyennePrat: 0,
     moyenneTpSpec: 0,
   });
+
   const specialties = useSpecialties();
+
+  useEffect(() => {
+    const saved = localStorage.getItem("tdaData");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setSalles(parsed.salles);
+      setEffectif(parsed.effectif);
+      setRepartition(parsed.repartition);
+    }
+  }, []);
 
   const totalHeuresTheo = somme(salles.theorie.map(s => Number(s.heuresMax) || 0));
   const totalHeuresPrat = somme(salles.pratique.map(s => Number(s.heuresMax) || 0));
@@ -69,18 +68,6 @@ export default function TDP() {
   const moyenneSurfaceTheo = moyenne(salles.theorie.map(s => Number(s.surfaceP) || 0));
   const moyenneSurfacePrat = moyenne(salles.pratique.map(s => Number(s.surfaceP) || 0));
   const moyenneSurfaceTpSpec = moyenne(salles.tpSpecifiques.map(s => Number(s.surfaceP) || 0));
-
-  // --- حساب النتائج النهائية ---
-  function calculerHeuresRestantes(total, besoin) {
-    return Number(total) - Number(besoin);
-  }
-  function determinerEtat(heuresRestantes) {
-    return heuresRestantes >= 0 ? 'Excédent' : 'Dépassement';
-  }
-  function calculerApprenantsPossibles(heuresRestantes, moyenneBesoin, moyenneSurface) {
-    if (!moyenneBesoin || !moyenneSurface || isNaN(heuresRestantes)) return 0;
-    return Math.max(0, Math.floor((heuresRestantes / moyenneBesoin) * moyenneSurface));
-  }
 
   const heuresRestantesTheo = calculerHeuresRestantes(totalHeuresTheo, repartition.besoinTheoTotal);
   const heuresRestantesPrat = calculerHeuresRestantes(totalHeuresPrat, repartition.besoinPratTotal);
@@ -101,6 +88,21 @@ export default function TDP() {
   const etatTpSpec = determinerEtat(heuresRestantesTpSpec);
 
   const testGlobal = etatTheo === 'Excédent' && etatPrat === 'Excédent' && etatTpSpec === 'Excédent' ? 'Excédent' : 'Dépassement';
+
+  // حساب النسبة لكل سطر
+  const percentTheo = calculerPourcentageLigne(heuresRestantesTheo, totalHeuresTheo, etatTheo);
+  const percentPrat = calculerPourcentageLigne(heuresRestantesPrat, totalHeuresPrat, etatPrat);
+  const percentTpSpec = calculerPourcentageLigne(heuresRestantesTpSpec, totalHeuresTpSpec, etatTpSpec);
+
+  // Résultat Global: الأقل (الأكثر سلبية)
+  const percentValues = [percentTheo, percentPrat, percentTpSpec]
+    .filter(p => p !== "")
+    .map(p => Number(p.replace('%','').replace('+','').replace('-','')));
+  let percentGlobal = "";
+  if (percentValues.length) {
+    const min = Math.min(...percentValues);
+    percentGlobal = (testGlobal === "Excédent" ? "+" : "-") + Math.abs(min) + "%";
+  }
 
   const resultatsData = {
     totalHeuresTheo,
@@ -127,39 +129,30 @@ export default function TDP() {
     testGlobal
   };
 
-  // حساب نسبة التجاوز أو الفائض
-  const totalBesoin = repartition.besoinTheoTotal + repartition.besoinPratTotal + repartition.besoinTpSpecTotal;
-  const totalRestant = heuresRestantesTheo + heuresRestantesPrat + heuresRestantesTpSpec;
-  let percentGlobal = "";
-  if (totalBesoin !== 0) {
-    const percent = Math.abs(Math.round((totalRestant / totalBesoin) * 100));
-    percentGlobal = testGlobal === "Excédent"
-      ? `+${percent}%`
-      : `-${percent}%`;
-  }
-
-  // فلترة synthèse des résultats مع الحفاظ على Résultat Global بشكل خاص (colSpan)
   const resultatsRows = [];
   if (moyenneSurfaceTheo > 0)
     resultatsRows.push([
       "Théorique",
       isNaN(heuresRestantesTheo) ? 0 : heuresRestantesTheo,
       isNaN(apprenantsPossiblesTheo) ? 0 : apprenantsPossiblesTheo,
-      etatTheo
+      etatTheo,
+      percentTheo
     ]);
   if (moyenneSurfacePrat > 0)
     resultatsRows.push([
       "Pratique",
       isNaN(heuresRestantesPrat) ? 0 : heuresRestantesPrat,
       isNaN(apprenantsPossiblesPrat) ? 0 : apprenantsPossiblesPrat,
-      etatPrat
+      etatPrat,
+      percentPrat
     ]);
   if (moyenneSurfaceTpSpec > 0)
     resultatsRows.push([
       "TP Spécifiques",
       isNaN(heuresRestantesTpSpec) ? 0 : heuresRestantesTpSpec,
       isNaN(apprenantsPossiblesTpSpec) ? 0 : apprenantsPossiblesTpSpec,
-      etatTpSpec
+      etatTpSpec,
+      percentTpSpec
     ]);
   // Résultat Global: صف خاص بcolSpan = 3 مع النسبة
   resultatsRows.push([
@@ -188,15 +181,11 @@ export default function TDP() {
   ];
 
   const handleEffectifChange = (rows) => {
-    if (!rows || rows.length === 0) {
-      setEffectif([{ specialite: "", groupes: 0, groupesAjout: 0, apprenants: 0 }]);
-    } else {
-      setEffectif(rows);
-    }
+    setEffectif(rows.length ? rows : [{ specialite: "", groupes: 0, apprenants: 0 }]);
   };
 
   const handleRepartitionChange = (repData) => {
-    const r = (Array.isArray(repData) && repData.length > 0) ? repData[0] : {};
+    const r = Array.isArray(repData) && repData.length > 0 ? repData[0] : {};
     setRepartition({
       besoinTheoTotal: r.besoinTheoTotal ?? 0,
       besoinPratTotal: r.besoinPratTotal ?? 0,
@@ -208,48 +197,35 @@ export default function TDP() {
   };
 
   const handleSave = () => {
-    try {
-      const data = {
-        salles,
-        cnos,
-        semaines,
-        heures,
-        apprenants,
-        effectif,
-        repartition,
-      };
-      localStorage.setItem("tdp-data", JSON.stringify(data));
-      alert("Les données ont été enregistrées !");
-    } catch (e) {
-      alert("Erreur lors de l'enregistrement des données.");
-    }
+    const data = { salles, effectif, repartition };
+    localStorage.setItem("tdaData", JSON.stringify(data));
+    alert("Les données ont été enregistrées !");
   };
 
   const handleReset = () => {
-    localStorage.removeItem("tdp-data");
-    window.location.reload();
+    localStorage.removeItem("tdaData");
+    setSalles({
+      theorie: [defaultSalle(1.0, 72, 56)],
+      pratique: [defaultSalle(1.0, 72, 56)],
+      tpSpecifiques: [defaultSalle(1.0, 72, 56)],
+    });
+    setEffectif([{ specialite: "", groupes: 0, apprenants: 0 }]);
+    setRepartition({
+      besoinTheoTotal: 0,
+      besoinPratTotal: 0,
+      besoinTpSpecTotal: 0,
+      moyenneTheo: 0,
+      moyennePrat: 0,
+      moyenneTpSpec: 0,
+    });
+    alert("Les données ont été réinitialisées.");
   };
-
-  useEffect(() => {
-    const saved = localStorage.getItem("tdp-data");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setSalles(parsed.salles || salles);
-      setCnos(parsed.cnos || cnos);
-      setSemaines(parsed.semaines || semaines);
-      setHeures(parsed.heures || heures);
-      setApprenants(parsed.apprenants || apprenants);
-      setEffectif(parsed.effectif || effectif);
-      setRepartition(parsed.repartition || repartition);
-    }
-    // eslint-disable-next-line
-  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 p-2 sm:p-4 md:p-6">
       <div ref={pdfRef}>
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-gray-800 mb-6">
-          Diagnostic de de l&apos;état prévu
+          Diagnostic de de l&apos;état actuel
         </h1>
         <div className="flex flex-col lg:flex-row gap-6 flex-wrap mb-8">
           <TableauSalles
@@ -266,19 +242,18 @@ export default function TDP() {
           />
         </div>
         <div className="mb-4">
-          <TableauEffectifAjout
-            titre="Effectif Prévu"
+          <TableauEffectif
+            titre="Effectif Actuel"
             specialties={specialties}
-            modeActuel={false}
+            modeActuel={true}
             onDataChange={handleEffectifChange}
             data={effectif}
             salles={salles}
-            moyenneSurfaceTheo={moyenneSurfaceTheo}
           />
         </div>
         <div className="mb-4">
-          <TableauRepartitionAjout
-            titre="Répartition Prévue des heures"
+          <TableauRepartition
+            titre="Répartition actuelle des heures"
             effectifData={effectif}
             specialties={specialties}
             onDataChange={handleRepartitionChange}
