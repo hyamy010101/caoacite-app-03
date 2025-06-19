@@ -203,46 +203,47 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         const isExcedent = globalRow[1] === 'Excédent';
         const bgColor = isExcedent ? [39, 174, 96] : [231, 76, 60];
         const percent = globalRow[2] ? globalRow[2].replace(/^[+-]/, "") : '';
-        const cellWidthLabel = 45;
-        const cellWidthResult = 50;
-        const cellHeight = 9;
         const arrow = "→";
         const label = `Résultat Global ${arrow}`;
         const resultText = `${globalRow[1]}${percent ? ` (${percent})` : ""}`;
 
-        // حساب موضع البداية بحيث يكون الكل في الوسط
-        const totalWidth = cellWidthLabel + cellWidthResult;
+        // إعدادات العرض
+        pdf.setFontSize(9);
+        pdf.setFont(undefined, 'bold');
+        const labelWidth = pdf.getTextWidth(label);
+        pdf.setFontSize(10);
+        const resultWidth = pdf.getTextWidth(resultText) + 16; // مساحة إضافية للحواف
+        const cellHeight = 9;
+        const totalWidth = labelWidth + 8 + resultWidth;
         const xStart = (pageWidth - totalWidth) / 2;
-        const y = tableStartY + 4;
+        const y = tableStartY + 6;
 
-        // خانة العنوان (شفافة بلا إطار)
+        // رسم العنوان (بدون مستطيل)
         pdf.setFontSize(9);
         pdf.setTextColor(0, 0, 0);
         pdf.setFont(undefined, 'bold');
-        pdf.text(
-          label,
-          xStart + cellWidthLabel / 2,
-          y + cellHeight / 2 + 2,
-          { align: 'center' }
-        );
+        pdf.text(label, xStart, y + cellHeight / 2 + 1, { align: 'left' });
 
-        // خانة النتيجة الملونة
+        // رسم مستطيل النتيجة فقط
+        const xResult = xStart + labelWidth + 8;
         pdf.setFillColor(...bgColor);
-        pdf.roundedRect(xStart + cellWidthLabel, y, cellWidthResult, cellHeight, 2, 2, 'F');
+        pdf.roundedRect(xResult, y, resultWidth, cellHeight, 2, 2, 'F');
 
+        // كتابة النتيجة داخل المستطيل
         pdf.setFontSize(10);
         pdf.setTextColor(255, 255, 255);
         pdf.setFont(undefined, 'bold');
         pdf.text(
           resultText,
-          xStart + cellWidthLabel + cellWidthResult / 2,
-          y + cellHeight / 2 + 2,
+          xResult + resultWidth / 2,
+          y + cellHeight / 2 + 1,
           { align: 'center' }
         );
 
+        // إعادة الإعدادات الافتراضية
         pdf.setTextColor(0, 0, 0);
         pdf.setFont(undefined, 'normal');
-        tableStartY += cellHeight + 8;
+        tableStartY += cellHeight + 10;
       }
 
       // --- النص التوضيحي أسفل النتائج ---
