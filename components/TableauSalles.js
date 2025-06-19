@@ -213,10 +213,18 @@ export default function TableauSalles({
               <table className="table-compact">
                 <thead>
                   <tr>
-                    <th>Code</th>
-                    <th>Surface (m²)</th>
-                    <th>Surface Pédagogique</th>
-                    <th>Heures Max</th>
+                    <th>
+                      Code
+                    </th>
+                    <th>
+                      Surface<br /> (m²)
+                    </th>
+                    <th>
+                      Surface<br /> Pédagogique
+                    </th>
+                    <th>
+                      Heures<br /> Max
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
