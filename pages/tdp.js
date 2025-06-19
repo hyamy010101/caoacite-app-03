@@ -354,31 +354,3 @@ export default function TDP() {
 
                 return (
                   <tr key={idx}>
-                    <td>{row.specialite || ""}</td>
-                    {/* <td>{spec["Besoin Théorique par Groupe"]}</td>
-                    <td>{spec["Besoin Pratique par Groupe"]}</td>
-                    <td>{spec["Besoin TP Spécifique par Groupe"]}</td> */}
-                    <td className="text-center">{besoinTheoParSpecialite}</td>
-                    <td className="text-center">{besoinPratParSpecialite}</td>
-                    <td className="text-center">{besoinTpSpecParSpecialite}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td className="font-bold text-right">Moyenne / Somme</td>
-                {/* <td>{avgBesoinTheoParGroupe}</td>
-                <td>{avgBesoinPratParGroupe}</td>
-                <td>{avgBesoinTpSpecParGroupe}</td> */}
-                <td className="text-center font-bold">{somme(effectif.map(e => e.apprenants))}</td>
-                <td className="text-center font-bold">{somme(effectif.map(e => e.apprenants))}</td>
-                <td className="text-center font-bold">{somme(effectif.map(e => e.apprenants))}</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-}

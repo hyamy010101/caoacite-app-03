@@ -24,16 +24,6 @@ export default function TableauResultats({ data }) {
   const heuresRestantesPrat = calculerHeuresRestantes(totalHeuresPrat, besoinPratTotal);
   const heuresRestantesTpSpec = calculerHeuresRestantes(totalHeuresTpSpec, besoinTpSpecTotal);
 
-  const apprenantsPossiblesTheo = calculerApprenantsPossibles(
-    heuresRestantesTheo, moyenneBesoinTheo, moyenneSurfaceTheo
-  );
-  const apprenantsPossiblesPrat = calculerApprenantsPossibles(
-    heuresRestantesPrat, moyenneBesoinPrat, moyenneSurfacePrat
-  );
-  const apprenantsPossiblesTpSpec = calculerApprenantsPossibles(
-    heuresRestantesTpSpec, moyenneBesoinTpSpec, moyenneSurfaceTpSpec
-  );
-
   const etatTheo = determinerEtat(heuresRestantesTheo);
   const etatPrat = determinerEtat(heuresRestantesPrat);
   const etatTpSpec = determinerEtat(heuresRestantesTpSpec);
@@ -46,7 +36,6 @@ export default function TableauResultats({ data }) {
     rows.push({
       label: "Théorique",
       heures: isNaN(heuresRestantesTheo) ? 0 : heuresRestantesTheo,
-      apprenants: isNaN(apprenantsPossiblesTheo) ? 0 : apprenantsPossiblesTheo,
       etat: etatTheo,
     });
   }
@@ -54,7 +43,6 @@ export default function TableauResultats({ data }) {
     rows.push({
       label: "Pratique",
       heures: isNaN(heuresRestantesPrat) ? 0 : heuresRestantesPrat,
-      apprenants: isNaN(apprenantsPossiblesPrat) ? 0 : apprenantsPossiblesPrat,
       etat: etatPrat,
     });
   }
@@ -62,7 +50,6 @@ export default function TableauResultats({ data }) {
     rows.push({
       label: "TP Spécifique",
       heures: isNaN(heuresRestantesTpSpec) ? 0 : heuresRestantesTpSpec,
-      apprenants: isNaN(apprenantsPossiblesTpSpec) ? 0 : apprenantsPossiblesTpSpec,
       etat: etatTpSpec,
     });
   }
@@ -76,7 +63,6 @@ export default function TableauResultats({ data }) {
             <tr>
               <th>Type</th>
               <th>Heures restantes</th>
-              <th>Apprenants possibles</th>
               <th>État</th>
             </tr>
           </thead>
@@ -85,14 +71,13 @@ export default function TableauResultats({ data }) {
               <tr key={i}>
                 <td style={{ fontSize: "0.85rem" }}>{row.label}</td>
                 <td className="text-center" style={{ fontSize: "0.85rem" }}>{row.heures}</td>
-                <td className="text-center" style={{ fontSize: "0.85rem" }}>{row.apprenants}</td>
                 <td className={`text-center font-semibold ${row.etat === 'Excédent' ? 'text-green-600' : 'text-red-600'}`} style={{ fontSize: "0.85rem" }}>
                   {row.etat}
                 </td>
               </tr>
             ))}
             <tr className="font-bold">
-              <td className="text-center" colSpan="3" style={{ fontSize: "0.85rem" }}>Résultat Global</td>
+              <td className="text-center" colSpan="2" style={{ fontSize: "0.85rem" }}>Résultat Global</td>
               <td className={`text-center ${couleurGlobal}`} style={{ fontSize: "0.85rem" }}>{testGlobal}</td>
             </tr>
           </tbody>

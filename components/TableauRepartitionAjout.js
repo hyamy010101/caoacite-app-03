@@ -14,20 +14,7 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
       }))
     : [{ specialite: "", groupes: 0, apprenants: 0 }];
 
-  // Arrays for each type
-  const besoinTheoParGroupeArr = rows.map(row => {
-    const spec = findSpecialtyData(row.specialite);
-    return Number(spec["Besoin Théorique par Groupe"]) || 0;
-  });
-  const besoinPratParGroupeArr = rows.map(row => {
-    const spec = findSpecialtyData(row.specialite);
-    return Number(spec["Besoin Pratique par Groupe"]) || 0;
-  });
-  const besoinTpSpecParGroupeArr = rows.map(row => {
-    const spec = findSpecialtyData(row.specialite);
-    return Number(spec["Besoin TP Spécifique par Groupe"]) || 0;
-  });
-
+  // فقط حسابات par Spécialité (لا حاجة لحسابات par Groupe للعرض)
   const besoinTheoParSpecArr = rows.map(row => {
     const spec = findSpecialtyData(row.specialite);
     return calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin Théorique par Groupe"] || 0);
@@ -41,17 +28,6 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
     return calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP Spécifique par Groupe"] || 0);
   });
 
-  // Calculations
-  const avgBesoinTheoParGroupe = besoinTheoParGroupeArr.length
-    ? (besoinTheoParGroupeArr.reduce((a, b) => a + b, 0) / besoinTheoParGroupeArr.length).toFixed(2)
-    : "0";
-  const avgBesoinPratParGroupe = besoinPratParGroupeArr.length
-    ? (besoinPratParGroupeArr.reduce((a, b) => a + b, 0) / besoinPratParGroupeArr.length).toFixed(2)
-    : "0";
-  const avgBesoinTpSpecParGroupe = besoinTpSpecParGroupeArr.length
-    ? (besoinTpSpecParGroupeArr.reduce((a, b) => a + b, 0) / besoinTpSpecParGroupeArr.length).toFixed(2)
-    : "0";
-
   const sumBesoinTheoParSpec = besoinTheoParSpecArr.reduce((a, b) => a + b, 0);
   const sumBesoinPratParSpec = besoinPratParSpecArr.reduce((a, b) => a + b, 0);
   const sumBesoinTpSpecParSpec = besoinTpSpecParSpecArr.reduce((a, b) => a + b, 0);
@@ -63,15 +39,11 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
           besoinTheoTotal: sumBesoinTheoParSpec,
           besoinPratTotal: sumBesoinPratParSpec,
           besoinTpSpecTotal: sumBesoinTpSpecParSpec,
-          besoinTheoParGroupe: Number(avgBesoinTheoParGroupe),
-          besoinPratParGroupe: Number(avgBesoinPratParGroupe),
-          besoinTpSpecParGroupe: Number(avgBesoinTpSpecParGroupe),
         }
       ]);
     }
   }, [
     sumBesoinTheoParSpec, sumBesoinPratParSpec, sumBesoinTpSpecParSpec,
-    avgBesoinTheoParGroupe, avgBesoinPratParGroupe, avgBesoinTpSpecParGroupe,
     onDataChange
   ]);
 
@@ -83,9 +55,6 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
           <thead>
             <tr>
               <th>Spécialité</th>
-              <th>Besoin Théorique<br />par Groupe</th>
-              <th>Besoin Pratique<br />par Groupe</th>
-              <th>Besoin TP Spécifique<br />par Groupe</th>
               <th>Besoin Théorique<br />par Spécialité</th>
               <th>Besoin Pratique<br />par Spécialité</th>
               <th>Besoin TP Spécifique<br />par Spécialité</th>
@@ -101,9 +70,6 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
               return (
                 <tr key={idx}>
                   <td style={{ fontSize: "0.85rem" }}>{row.specialite || ""}</td>
-                  <td className="text-center" style={{ fontSize: "0.85rem" }}>{spec["Besoin Théorique par Groupe"] || ""}</td>
-                  <td className="text-center" style={{ fontSize: "0.85rem" }}>{spec["Besoin Pratique par Groupe"] || ""}</td>
-                  <td className="text-center" style={{ fontSize: "0.85rem" }}>{spec["Besoin TP Spécifique par Groupe"] || ""}</td>
                   <td className="text-center" style={{ fontSize: "0.85rem" }}>{besoinTheoParSpecialite}</td>
                   <td className="text-center" style={{ fontSize: "0.85rem" }}>{besoinPratParSpecialite}</td>
                   <td className="text-center" style={{ fontSize: "0.85rem" }}>{besoinTpSpecParSpecialite}</td>
@@ -113,10 +79,7 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
           </tbody>
           <tfoot>
             <tr>
-              <td className="font-bold text-right" style={{ fontSize: "0.85rem" }}>Moyenne / Somme</td>
-              <td className="text-center font-bold" style={{ fontSize: "0.85rem" }}>{avgBesoinTheoParGroupe}</td>
-              <td className="text-center font-bold" style={{ fontSize: "0.85rem" }}>{avgBesoinPratParGroupe}</td>
-              <td className="text-center font-bold" style={{ fontSize: "0.85rem" }}>{avgBesoinTpSpecParGroupe}</td>
+              <td className="font-bold text-right" style={{ fontSize: "0.85rem" }}>Somme</td>
               <td className="text-center font-bold" style={{ fontSize: "0.85rem" }}>{sumBesoinTheoParSpec}</td>
               <td className="text-center font-bold" style={{ fontSize: "0.85rem" }}>{sumBesoinPratParSpec}</td>
               <td className="text-center font-bold" style={{ fontSize: "0.85rem" }}>{sumBesoinTpSpecParSpec}</td>
