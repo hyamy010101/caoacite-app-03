@@ -204,40 +204,48 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         const bgColor = isExcedent ? [39, 174, 96] : [231, 76, 60];
         const percent = globalRow[2] ? globalRow[2].replace(/^[+-]/, "") : '';
         const resultText = `${globalRow[1]}${percent ? ` (${percent})` : ""}`;
-
-        // حساب عرض كل خانة
-        pdf.setFontSize(10);
-        const w1 = pdf.getTextWidth("Résultat Global") + 12;
-        pdf.setFontSize(12);
-        const w2 = pdf.getTextWidth("→") + 12;
-        pdf.setFontSize(11);
-        const w3 = pdf.getTextWidth(resultText) + 16;
-        const tableWidth = w1 + w2 + w3;
+        const arrow = "→";
         const pageWidth = pdf.internal.pageSize.getWidth();
 
+        // إعدادات الخط
+        const fontSize = 9;
+        pdf.setFontSize(fontSize);
+        pdf.setFont("helvetica", "bold");
+
+        // حساب عرض كل خانة بدقة
+        const w1 = pdf.getTextWidth("Résultat Global") + 10;
+        const w2 = pdf.getTextWidth(arrow) + 8;
+        const w3 = pdf.getTextWidth(resultText) + 12;
+        const tableWidth = w1 + w2 + w3;
+
+        // تصغير المسافة مع الجدول السابق
+        const startY = tableStartY + 4;
+
         autoTable(pdf, {
-          startY: tableStartY + 8,
+          startY,
           body: [
             [
-              { content: "Résultat Global", styles: { halign: 'center', fontStyle: 'bold', fontSize: 10, cellWidth: w1 } },
-              { content: "→", styles: { halign: 'center', fontStyle: 'bold', fontSize: 12, cellWidth: w2 } },
-              { content: resultText, styles: { halign: 'center', fontStyle: 'bold', fontSize: 11, textColor: [255,255,255], fillColor: bgColor, cellWidth: w3 } }
+              { content: "Résultat Global", styles: { halign: 'center', fontStyle: 'bold', fontSize, cellWidth: w1, textColor: [0,0,0], fillColor: [255,255,255] } },
+              { content: arrow, styles: { halign: 'center', fontStyle: 'bold', fontSize, cellWidth: w2, textColor: [0,0,0], fillColor: [255,255,255] } },
+              { content: resultText, styles: { halign: 'center', fontStyle: 'bold', fontSize, cellWidth: w3, textColor: [255,255,255], fillColor: bgColor } }
             ]
           ],
           theme: 'grid',
           styles: {
-            cellPadding: { top: 2, right: 6, bottom: 2, left: 6 },
-            valign: 'middle'
+            cellPadding: { top: 2, right: 4, bottom: 2, left: 4 },
+            valign: 'middle',
+            font: "helvetica"
           },
+          head: [],
+          margin: { left: (pageWidth - tableWidth) / 2 },
           tableLineWidth: 0.5,
           tableLineColor: [180, 180, 180],
-          margin: { left: (pageWidth - tableWidth) / 2 },
           didDrawCell: (data) => {
             // لا شيء إضافي
           }
         });
 
-        tableStartY = pdf.lastAutoTable.finalY + 8;
+        tableStartY = pdf.lastAutoTable.finalY + 6;
       }
 
       // --- النص التوضيحي أسفل النتائج ---
