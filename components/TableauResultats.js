@@ -1,6 +1,7 @@
 import {
   calculerHeuresRestantes,
   determinerEtat,
+  calculerApprenantsPossibles,
 } from '../utils/calculs';
 
 export default function TableauResultats({ data }) {
@@ -20,6 +21,11 @@ export default function TableauResultats({ data }) {
     moyenneSurfaceTpSpec,
     moyenneSurfaceTp2,
     moyenneSurfaceTp3,
+    moyenneBesoinTheo,
+    moyenneBesoinPrat,
+    moyenneBesoinTpSpec,
+    moyenneBesoinTp2,
+    moyenneBesoinTp3,
   } = data;
 
   const heuresRestantesTheo = calculerHeuresRestantes(totalHeuresTheo, besoinTheoTotal);
@@ -27,6 +33,23 @@ export default function TableauResultats({ data }) {
   const heuresRestantesTpSpec = calculerHeuresRestantes(totalHeuresTpSpec, besoinTpSpecTotal);
   const heuresRestantesTp2 = calculerHeuresRestantes(totalHeuresTp2, besoinTp2Total);
   const heuresRestantesTp3 = calculerHeuresRestantes(totalHeuresTp3, besoinTp3Total);
+
+  // احسب apprenants possibles بشكل صحيح
+  const apprenantsPossiblesTheo = calculerApprenantsPossibles(
+    heuresRestantesTheo, moyenneBesoinTheo, moyenneSurfaceTheo
+  );
+  const apprenantsPossiblesPrat = calculerApprenantsPossibles(
+    heuresRestantesPrat, moyenneBesoinPrat, moyenneSurfacePrat
+  );
+  const apprenantsPossiblesTpSpec = calculerApprenantsPossibles(
+    heuresRestantesTpSpec, moyenneBesoinTpSpec, moyenneSurfaceTpSpec
+  );
+  const apprenantsPossiblesTp2 = calculerApprenantsPossibles(
+    heuresRestantesTp2, moyenneBesoinTp2, moyenneSurfaceTp2
+  );
+  const apprenantsPossiblesTp3 = calculerApprenantsPossibles(
+    heuresRestantesTp3, moyenneBesoinTp3, moyenneSurfaceTp3
+  );
 
   const etatTheo = determinerEtat(heuresRestantesTheo);
   const etatPrat = determinerEtat(heuresRestantesPrat);
@@ -46,6 +69,7 @@ export default function TableauResultats({ data }) {
     rows.push({
       label: "Théorique",
       heures: isNaN(heuresRestantesTheo) ? 0 : heuresRestantesTheo,
+      apprenants: isNaN(apprenantsPossiblesTheo) ? 0 : apprenantsPossiblesTheo,
       etat: etatTheo,
     });
   }
@@ -53,6 +77,7 @@ export default function TableauResultats({ data }) {
     rows.push({
       label: "Pratique",
       heures: isNaN(heuresRestantesPrat) ? 0 : heuresRestantesPrat,
+      apprenants: isNaN(apprenantsPossiblesPrat) ? 0 : apprenantsPossiblesPrat,
       etat: etatPrat,
     });
   }
@@ -60,6 +85,7 @@ export default function TableauResultats({ data }) {
     rows.push({
       label: "TP Spécifique",
       heures: isNaN(heuresRestantesTpSpec) ? 0 : heuresRestantesTpSpec,
+      apprenants: isNaN(apprenantsPossiblesTpSpec) ? 0 : apprenantsPossiblesTpSpec,
       etat: etatTpSpec,
     });
   }
@@ -67,6 +93,7 @@ export default function TableauResultats({ data }) {
     rows.push({
       label: "TP2",
       heures: isNaN(heuresRestantesTp2) ? 0 : heuresRestantesTp2,
+      apprenants: isNaN(apprenantsPossiblesTp2) ? 0 : apprenantsPossiblesTp2,
       etat: etatTp2,
     });
   }
@@ -74,6 +101,7 @@ export default function TableauResultats({ data }) {
     rows.push({
       label: "TP3",
       heures: isNaN(heuresRestantesTp3) ? 0 : heuresRestantesTp3,
+      apprenants: isNaN(apprenantsPossiblesTp3) ? 0 : apprenantsPossiblesTp3,
       etat: etatTp3,
     });
   }
@@ -87,6 +115,7 @@ export default function TableauResultats({ data }) {
             <tr>
               <th>Type</th>
               <th>Heures<br />restantes</th>
+              <th>Apprenants<br />possibles</th>
               <th>État</th>
             </tr>
           </thead>
@@ -95,13 +124,14 @@ export default function TableauResultats({ data }) {
               <tr key={i}>
                 <td style={{ fontSize: "0.85rem" }}>{row.label}</td>
                 <td className="text-center" style={{ fontSize: "0.85rem" }}>{row.heures}</td>
+                <td className="text-center" style={{ fontSize: "0.85rem" }}>{row.apprenants}</td>
                 <td className={`text-center font-semibold ${row.etat === 'Excédent' ? 'text-green-600' : 'text-red-600'}`} style={{ fontSize: "0.85rem" }}>
                   {row.etat}
                 </td>
               </tr>
             ))}
             <tr className="font-bold">
-              <td className="text-center" colSpan="2" style={{ fontSize: "0.85rem" }}>Résultat Global</td>
+              <td className="text-center" colSpan="3" style={{ fontSize: "0.85rem" }}>Résultat Global</td>
               <td className={`text-center ${couleurGlobal}`} style={{ fontSize: "0.85rem" }}>{testGlobal}</td>
             </tr>
           </tbody>
