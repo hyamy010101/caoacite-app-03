@@ -203,35 +203,37 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         const isExcedent = globalRow[1] === 'Excédent';
         const bgColor = isExcedent ? [39, 174, 96] : [231, 76, 60];
         const percent = globalRow[2] ? globalRow[2].replace(/^[+-]/, "") : '';
-        const cellWidth = 60;
-        const cellHeight = 10;
-        const x = (pageWidth - cellWidth) / 2;
+        const cellWidth = 50;
+        const cellHeight = 8;
+        const margin = 8;
         const y = tableStartY + 2;
 
-        // رسم خلفية ملونة
+        // العنوان على اليسار
+        pdf.setFontSize(9);
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFont(undefined, 'bold');
+        pdf.text('Résultat Global', 14, y + cellHeight / 2 + 2, { align: 'left' });
+
+        // الخانة الملونة على يمين العنوان
+        const x = 14 + pdf.getTextWidth('Résultat Global') + margin;
+
         pdf.setFillColor(...bgColor);
         pdf.roundedRect(x, y, cellWidth, cellHeight, 2, 2, 'F');
 
-        // Résultat Global بالأسود
-        pdf.setFontSize(11);
-        pdf.setTextColor(0, 0, 0);
-        pdf.setFont(undefined, 'bold');
-        pdf.text('Résultat Global', x + 5, y + 6.5);
-
-        // النتيجة النهائية بالأبيض داخل الخلفية الملونة
-        pdf.setFontSize(12);
+        // النتيجة بالأبيض داخل الخانة الملونة وبخط أصغر
+        pdf.setFontSize(10);
         pdf.setTextColor(255, 255, 255);
         pdf.setFont(undefined, 'bold');
         pdf.text(
           `${globalRow[1]}${percent ? ` (${percent})` : ""}`,
-          x + cellWidth - 5,
-          y + 6.5,
-          { align: 'right' }
+          x + cellWidth / 2,
+          y + cellHeight / 2 + 2,
+          { align: 'center' }
         );
 
         pdf.setTextColor(0, 0, 0);
         pdf.setFont(undefined, 'normal');
-        tableStartY += cellHeight + 4;
+        tableStartY += cellHeight + 6;
       }
 
       // --- النص التوضيحي أسفل النتائج ---
