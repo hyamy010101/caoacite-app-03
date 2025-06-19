@@ -204,7 +204,7 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         const bgColor = isExcedent ? [39, 174, 96] : [231, 76, 60];
         const percent = globalRow[2] ? globalRow[2].replace(/^[+-]/, "") : '';
         const resultText = `${globalRow[1]}${percent ? ` (${percent})` : ""}`;
-        const arrow = "→";
+        const label = "Résultat Global :";
         const pageWidth = pdf.internal.pageSize.getWidth();
 
         // إعدادات الخط
@@ -213,10 +213,9 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         pdf.setFont("helvetica", "bold");
 
         // حساب عرض كل خانة بدقة
-        const w1 = pdf.getTextWidth("Résultat Global") + 10;
-        const w2 = pdf.getTextWidth(arrow) + 8;
-        const w3 = pdf.getTextWidth(resultText) + 12;
-        const tableWidth = w1 + w2 + w3;
+        const w1 = pdf.getTextWidth(label) + 10;
+        const w2 = pdf.getTextWidth(resultText) + 12;
+        const tableWidth = w1 + w2;
 
         // تصغير المسافة مع الجدول السابق
         const startY = tableStartY + 4;
@@ -225,12 +224,11 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
           startY,
           body: [
             [
-              { content: "Résultat Global", styles: { halign: 'center', fontStyle: 'bold', fontSize, cellWidth: w1, textColor: [0,0,0], fillColor: [255,255,255] } },
-              { content: arrow, styles: { halign: 'center', fontStyle: 'bold', fontSize, cellWidth: w2, textColor: [0,0,0], fillColor: [255,255,255] } },
-              { content: resultText, styles: { halign: 'center', fontStyle: 'bold', fontSize, cellWidth: w3, textColor: [255,255,255], fillColor: bgColor } }
+              { content: label, styles: { halign: 'center', fontStyle: 'bold', fontSize, cellWidth: w1, textColor: [0,0,0], fillColor: [255,255,255], lineWidth: 0 } },
+              { content: resultText, styles: { halign: 'center', fontStyle: 'bold', fontSize, cellWidth: w2, textColor: [255,255,255], fillColor: bgColor, lineWidth: 0 } }
             ]
           ],
-          theme: 'grid',
+          theme: 'plain', // لا أطر
           styles: {
             cellPadding: { top: 2, right: 4, bottom: 2, left: 4 },
             valign: 'middle',
@@ -238,8 +236,6 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
           },
           head: [],
           margin: { left: (pageWidth - tableWidth) / 2 },
-          tableLineWidth: 0.5,
-          tableLineColor: [180, 180, 180],
           didDrawCell: (data) => {
             // لا شيء إضافي
           }
