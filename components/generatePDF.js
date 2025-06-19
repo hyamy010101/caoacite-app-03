@@ -203,43 +203,32 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         const isExcedent = globalRow[1] === 'Excédent';
         const bgColor = isExcedent ? [39, 174, 96] : [231, 76, 60];
         const percent = globalRow[2] ? globalRow[2].replace(/^[+-]/, "") : '';
-        const arrow = "→";
-        const label = `Résultat Global ${arrow}`;
         const resultText = `${globalRow[1]}${percent ? ` (${percent})` : ""}`;
 
-        // إعدادات المستطيل
-        pdf.setFontSize(10);
-        pdf.setFont(undefined, 'bold');
-        const resultWidth = pdf.getTextWidth(resultText) + 18;
-        const cellHeight = 10;
-        const xResult = (pageWidth - resultWidth) / 2;
-        const y = tableStartY + 8;
+        // جدول من 3 خانات: العنوان | السهم | النتيجة
+        autoTable(pdf, {
+          startY: tableStartY + 8,
+          body: [
+            [
+              { content: "Résultat Global", styles: { halign: 'center', fontStyle: 'bold', fontSize: 10 } },
+              { content: "→", styles: { halign: 'center', fontStyle: 'bold', fontSize: 12 } },
+              { content: resultText, styles: { halign: 'center', fontStyle: 'bold', fontSize: 11, textColor: [255,255,255], fillColor: bgColor } }
+            ]
+          ],
+          theme: 'grid',
+          styles: {
+            cellPadding: { top: 2, right: 6, bottom: 2, left: 6 },
+            valign: 'middle'
+          },
+          tableLineWidth: 0.5,
+          tableLineColor: [180, 180, 180],
+          margin: { left: 'center' },
+          didDrawCell: (data) => {
+            // لا شيء إضافي
+          }
+        });
 
-        // العنوان في الوسط فوق المستطيل
-        pdf.setFontSize(9);
-        pdf.setTextColor(0, 0, 0);
-        pdf.setFont(undefined, 'bold');
-        pdf.text(label, pageWidth / 2, y - 2, { align: 'center' });
-
-        // رسم مستطيل النتيجة فقط
-        pdf.setFillColor(...bgColor);
-        pdf.roundedRect(xResult, y, resultWidth, cellHeight, 2, 2, 'F');
-
-        // كتابة النتيجة داخل المستطيل
-        pdf.setFontSize(10);
-        pdf.setTextColor(255, 255, 255);
-        pdf.setFont(undefined, 'bold');
-        pdf.text(
-          resultText,
-          pageWidth / 2,
-          y + cellHeight / 2 + 3,
-          { align: 'center' }
-        );
-
-        // إعادة الإعدادات الافتراضية
-        pdf.setTextColor(0, 0, 0);
-        pdf.setFont(undefined, 'normal');
-        tableStartY += cellHeight + 16;
+        tableStartY = pdf.lastAutoTable.finalY + 8;
       }
 
       // --- النص التوضيحي أسفل النتائج ---
