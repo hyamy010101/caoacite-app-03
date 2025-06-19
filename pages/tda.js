@@ -107,6 +107,17 @@ export default function TDA() {
     testGlobal
   };
 
+  // حساب نسبة التجاوز أو الفائض
+  const totalBesoin = repartition.besoinTheoTotal + repartition.besoinPratTotal + repartition.besoinTpSpecTotal;
+  const totalRestant = heuresRestantesTheo + heuresRestantesPrat + heuresRestantesTpSpec;
+  let percentGlobal = "";
+  if (totalBesoin !== 0) {
+    const percent = Math.abs(Math.round((totalRestant / totalBesoin) * 100));
+    percentGlobal = testGlobal === "Excédent"
+      ? `+${percent}%`
+      : `-${percent}%`;
+  }
+
   // فلترة synthèse des résultats مع الحفاظ على Résultat Global بشكل خاص (colSpan)
   const resultatsRows = [];
   if (moyenneSurfaceTheo > 0)
@@ -130,13 +141,14 @@ export default function TDA() {
       isNaN(apprenantsPossiblesTpSpec) ? 0 : apprenantsPossiblesTpSpec,
       etatTpSpec
     ]);
-  // Résultat Global: صف خاص بcolSpan = 3
+  // Résultat Global: صف خاص بcolSpan = 3 مع النسبة
   resultatsRows.push([
     { value: "Résultat Global", colSpan: 3 },
-    testGlobal
+    testGlobal,
+    percentGlobal
   ]);
   const resultatsTable = {
-    columns: ["Type", "Heures restantes", "Apprenants possibles", "État"],
+    columns: ["Type", "Heures restantes", "Apprenants possibles", "État", "Niveau"],
     rows: resultatsRows
   };
 
