@@ -163,59 +163,51 @@ export default function TableauSalles({
         return (
           <div className="bg-white shadow rounded-2xl p-4 mb-8 flex-1" key={key}>
             <h2 className="text-xl font-bold text-gray-700 mb-4">{label}</h2>
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <label className="text-xs mr-1">
-                CNO:
+            <div className="mb-2">
+              <div className="flex gap-2 mb-1">
+                <span className="text-xs w-16 text-center">CNO</span>
+                <span className="text-xs w-16 text-center">Semaines</span>
+                <span className="text-xs w-16 text-center">Heures</span>
+                <span className="text-xs w-20 text-center">Apprenants</span>
+              </div>
+              <div className="flex gap-2">
                 <select
                   value={cnos[key]}
                   onChange={e => updateCno(key, Number(e.target.value))}
-                  className="text-xs px-2 py-1 h-7 border rounded ml-1"
-                  style={{ width: 65 }}
+                  className="text-xs px-2 py-1 h-7 border rounded w-16 text-center"
                 >
                   {cnoOptions.map(opt => (
                     <option key={opt} value={opt}>{opt.toFixed(1)}</option>
                   ))}
                 </select>
-              </label>
-              <label className="text-xs mx-1">
-                Semaines:
                 <select
                   value={semaines[key]}
                   onChange={e => updateSemaines(key, Number(e.target.value))}
-                  className="text-xs px-2 py-1 h-7 border rounded ml-1"
-                  style={{ width: 65 }}
+                  className="text-xs px-2 py-1 h-7 border rounded w-16 text-center"
                 >
                   {semainesOptions.map(opt => (
                     <option key={opt} value={opt}>{opt}</option>
                   ))}
                 </select>
-              </label>
-              <label className="text-xs mx-1">
-                Heures:
                 <select
                   value={heures[key]}
                   onChange={e => updateHeures(key, Number(e.target.value))}
-                  className="text-xs px-2 py-1 h-7 border rounded ml-1"
-                  style={{ width: 65 }}
+                  className="text-xs px-2 py-1 h-7 border rounded w-16 text-center"
                 >
                   {heuresOptions.map(opt => (
                     <option key={opt} value={opt}>{opt}</option>
                   ))}
                 </select>
-              </label>
-              <label className="text-xs mx-1">
-                Apprenants:
                 <select
                   value={apprenants[key]}
                   onChange={e => updateApprenants(key, Number(e.target.value))}
-                  className="text-xs px-2 py-1 h-7 border rounded ml-1"
-                  style={{ width: 65 }}
+                  className="text-xs px-2 py-1 h-7 border rounded w-20 text-center"
                 >
                   {apprenantsOptions.map(opt => (
                     <option key={opt} value={opt}>{opt}</option>
                   ))}
                 </select>
-              </label>
+              </div>
             </div>
             <div className="table-responsive" style={{ width: "100%", overflowX: "auto" }}>
               <table className="table-compact">
