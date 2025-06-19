@@ -205,20 +205,28 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         const percent = globalRow[2] ? globalRow[2].replace(/^[+-]/, "") : '';
         const cellWidth = 50;
         const cellHeight = 8;
-        const margin = 8;
-        const y = tableStartY + 2;
+        const margin = 6;
+        const arrow = "→";
+        const label = `Résultat Global ${arrow}`;
 
-        // العنوان على اليسار
+        // حساب عرض العنوان والسهم
         pdf.setFontSize(9);
-        pdf.setTextColor(0, 0, 0);
         pdf.setFont(undefined, 'bold');
-        pdf.text('Résultat Global', 14, y + cellHeight / 2 + 2, { align: 'left' });
+        const labelWidth = pdf.getTextWidth(label);
+
+        // حساب موضع البداية بحيث يكون الكل في الوسط
+        const totalWidth = labelWidth + margin + cellWidth;
+        const xStart = (pageWidth - totalWidth) / 2;
+        const y = tableStartY + 4; // تقليل المسافة العلوية
+
+        // العنوان والسهم في الوسط
+        pdf.setTextColor(0, 0, 0);
+        pdf.text(label, xStart, y + cellHeight / 2 + 1.5, { align: 'left' });
 
         // الخانة الملونة على يمين العنوان
-        const x = 14 + pdf.getTextWidth('Résultat Global') + margin;
-
+        const xCell = xStart + labelWidth + margin;
         pdf.setFillColor(...bgColor);
-        pdf.roundedRect(x, y, cellWidth, cellHeight, 2, 2, 'F');
+        pdf.roundedRect(xCell, y, cellWidth, cellHeight, 2, 2, 'F');
 
         // النتيجة بالأبيض داخل الخانة الملونة وبخط أصغر
         pdf.setFontSize(10);
@@ -226,14 +234,14 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         pdf.setFont(undefined, 'bold');
         pdf.text(
           `${globalRow[1]}${percent ? ` (${percent})` : ""}`,
-          x + cellWidth / 2,
-          y + cellHeight / 2 + 2,
+          xCell + cellWidth / 2,
+          y + cellHeight / 2 + 1.5,
           { align: 'center' }
         );
 
         pdf.setTextColor(0, 0, 0);
         pdf.setFont(undefined, 'normal');
-        tableStartY += cellHeight + 6;
+        tableStartY += cellHeight + 8;
       }
 
       // --- النص التوضيحي أسفل النتائج ---
