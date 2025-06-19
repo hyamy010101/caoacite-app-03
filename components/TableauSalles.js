@@ -6,6 +6,15 @@ import {
   sommeColonne
 } from "../utils/calculs";
 
+// أضف TP2 وTP3
+const salleTitles = [
+  { key: "theorie", label: "Salles Théorie" },
+  { key: "pratique", label: "Salles Pratique" },
+  { key: "tpSpecifiques", label: "Salles TP Spécifiques" },
+  { key: "tp2", label: "Salles TP2" },
+  { key: "tp3", label: "Salles TP3" },
+];
+
 const defaultSalle = (cno, semaines, heures, maxApprenants = 26) => ({
   surface: "",
   cno,
@@ -14,12 +23,6 @@ const defaultSalle = (cno, semaines, heures, maxApprenants = 26) => ({
   surfaceP: calculerSurfacePedagogique(0, cno, maxApprenants),
   heuresMax: calculerHeuresMax(semaines, heures),
 });
-
-const salleTitles = [
-  { key: "theorie", label: "Salles Théorie" },
-  { key: "pratique", label: "Salles Pratique" },
-  { key: "tpSpecifiques", label: "Salles TP Spécifiques" },
-];
 
 export default function TableauSalles({
   salles,

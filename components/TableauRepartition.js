@@ -27,10 +27,22 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
     const spec = findSpecialtyData(row.specialite);
     return calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP Spécifique par Groupe"] || 0);
   });
+  // TP2
+  const besoinTp2ParSpecArr = rows.map(row => {
+    const spec = findSpecialtyData(row.specialite);
+    return calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP2 par Groupe"] || 0);
+  });
+  // TP3
+  const besoinTp3ParSpecArr = rows.map(row => {
+    const spec = findSpecialtyData(row.specialite);
+    return calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP3 par Groupe"] || 0);
+  });
 
   const sumBesoinTheoParSpec = besoinTheoParSpecArr.reduce((a, b) => a + b, 0);
   const sumBesoinPratParSpec = besoinPratParSpecArr.reduce((a, b) => a + b, 0);
   const sumBesoinTpSpecParSpec = besoinTpSpecParSpecArr.reduce((a, b) => a + b, 0);
+  const sumBesoinTp2ParSpec = besoinTp2ParSpecArr.reduce((a, b) => a + b, 0);
+  const sumBesoinTp3ParSpec = besoinTp3ParSpecArr.reduce((a, b) => a + b, 0);
 
   useEffect(() => {
     if (onDataChange) {
@@ -39,12 +51,14 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
           besoinTheoTotal: sumBesoinTheoParSpec,
           besoinPratTotal: sumBesoinPratParSpec,
           besoinTpSpecTotal: sumBesoinTpSpecParSpec,
+          besoinTp2Total: sumBesoinTp2ParSpec,
+          besoinTp3Total: sumBesoinTp3ParSpec,
         }
       ]);
     }
   }, [
     sumBesoinTheoParSpec, sumBesoinPratParSpec, sumBesoinTpSpecParSpec,
-    onDataChange
+    sumBesoinTp2ParSpec, sumBesoinTp3ParSpec, onDataChange
   ]);
 
   return (
@@ -58,6 +72,8 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
               <th>Besoin Théorique<br />par Spécialité</th>
               <th>Besoin Pratique<br />par Spécialité</th>
               <th>Besoin TP Spécifique<br />par Spécialité</th>
+              <th>Besoin TP2<br />par Spécialité</th>
+              <th>Besoin TP3<br />par Spécialité</th>
             </tr>
           </thead>
           <tbody>
@@ -66,15 +82,17 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
               const besoinTheoParSpecialite = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin Théorique par Groupe"] || 0);
               const besoinPratParSpecialite = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin Pratique par Groupe"] || 0);
               const besoinTpSpecParSpecialite = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP Spécifique par Groupe"] || 0);
+              const besoinTp2ParSpecialite = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP2 par Groupe"] || 0);
+              const besoinTp3ParSpecialite = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP3 par Groupe"] || 0);
 
               return (
                 <tr key={idx}>
-                  <td>
-                    {row.specialite || ""}
-                  </td>
+                  <td>{row.specialite || ""}</td>
                   <td className="text-center">{besoinTheoParSpecialite}</td>
                   <td className="text-center">{besoinPratParSpecialite}</td>
                   <td className="text-center">{besoinTpSpecParSpecialite}</td>
+                  <td className="text-center">{besoinTp2ParSpecialite}</td>
+                  <td className="text-center">{besoinTp3ParSpecialite}</td>
                 </tr>
               );
             })}
@@ -85,6 +103,8 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
               <td className="text-center font-bold">{sumBesoinTheoParSpec}</td>
               <td className="text-center font-bold">{sumBesoinPratParSpec}</td>
               <td className="text-center font-bold">{sumBesoinTpSpecParSpec}</td>
+              <td className="text-center font-bold">{sumBesoinTp2ParSpec}</td>
+              <td className="text-center font-bold">{sumBesoinTp3ParSpec}</td>
             </tr>
           </tfoot>
         </table>

@@ -1,6 +1,5 @@
 import {
   calculerHeuresRestantes,
-  calculerApprenantsPossibles,
   determinerEtat,
 } from '../utils/calculs';
 
@@ -9,26 +8,37 @@ export default function TableauResultats({ data }) {
     totalHeuresTheo,
     totalHeuresPrat,
     totalHeuresTpSpec,
+    totalHeuresTp2,
+    totalHeuresTp3,
     besoinTheoTotal,
     besoinPratTotal,
     besoinTpSpecTotal,
-    moyenneBesoinTheo,
-    moyenneBesoinPrat,
-    moyenneBesoinTpSpec,
+    besoinTp2Total,
+    besoinTp3Total,
     moyenneSurfaceTheo,
     moyenneSurfacePrat,
     moyenneSurfaceTpSpec,
+    moyenneSurfaceTp2,
+    moyenneSurfaceTp3,
   } = data;
 
   const heuresRestantesTheo = calculerHeuresRestantes(totalHeuresTheo, besoinTheoTotal);
   const heuresRestantesPrat = calculerHeuresRestantes(totalHeuresPrat, besoinPratTotal);
   const heuresRestantesTpSpec = calculerHeuresRestantes(totalHeuresTpSpec, besoinTpSpecTotal);
+  const heuresRestantesTp2 = calculerHeuresRestantes(totalHeuresTp2, besoinTp2Total);
+  const heuresRestantesTp3 = calculerHeuresRestantes(totalHeuresTp3, besoinTp3Total);
 
   const etatTheo = determinerEtat(heuresRestantesTheo);
   const etatPrat = determinerEtat(heuresRestantesPrat);
   const etatTpSpec = determinerEtat(heuresRestantesTpSpec);
+  const etatTp2 = determinerEtat(heuresRestantesTp2);
+  const etatTp3 = determinerEtat(heuresRestantesTp3);
 
-  const testGlobal = etatTheo === 'Excédent' && etatPrat === 'Excédent' && etatTpSpec === 'Excédent' ? 'Excédent' : 'Dépassement';
+  // اجعل النتيجة العامة Excédent فقط إذا كل القاعات Excédent
+  const testGlobal =
+    [etatTheo, etatPrat, etatTpSpec, etatTp2, etatTp3].every(e => e === 'Excédent')
+      ? 'Excédent'
+      : 'Dépassement';
   const couleurGlobal = testGlobal === 'Excédent' ? 'text-green-600' : 'text-red-600';
 
   const rows = [];
@@ -53,6 +63,20 @@ export default function TableauResultats({ data }) {
       etat: etatTpSpec,
     });
   }
+  if (moyenneSurfaceTp2 > 0) {
+    rows.push({
+      label: "TP2",
+      heures: isNaN(heuresRestantesTp2) ? 0 : heuresRestantesTp2,
+      etat: etatTp2,
+    });
+  }
+  if (moyenneSurfaceTp3 > 0) {
+    rows.push({
+      label: "TP3",
+      heures: isNaN(heuresRestantesTp3) ? 0 : heuresRestantesTp3,
+      etat: etatTp3,
+    });
+  }
 
   return (
     <div className="bg-white shadow rounded-2xl p-4 mb-8">
@@ -62,7 +86,7 @@ export default function TableauResultats({ data }) {
           <thead>
             <tr>
               <th>Type</th>
-              <th>Heures restantes</th>
+              <th>Heures<br />restantes</th>
               <th>État</th>
             </tr>
           </thead>
