@@ -161,42 +161,13 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
       pdf.text('Synthèse des résultats', 14, tableStartY);
       tableStartY += 4;
 
-      // حساب ارتفاع الجدول تقريبا
-      const rowsCount = resultatsTable.rows.length + 1;
-      const approxRowHeight = 7;
-      const requiredHeight = rowsCount * approxRowHeight + 10;
+      // إزالة صف Résultat Global من الجدول
+      const rowsSansGlobal = resultatsTable.rows.filter(
+        row => !(row[0] && typeof row[0] === "object" && row[0].value === "Résultat Global")
+      );
 
-      if (!hasSpaceForTable(requiredHeight)) {
-        pdf.addPage();
-        tableStartY = 20;
-      }
-
-      const body = resultatsTable.rows.map((row, idx) => {
-        // صف Résultat Global
-        if (row[0] && typeof row[0] === "object" && row[0].colSpan >= 2) {
-          const isExcedent = row[1] === 'Excédent';
-          const color = isExcedent ? [39, 174, 96] : [231, 76, 60];
-          const percent = row[2] ? ` (${row[2]})` : '';
-          return [
-            {
-              content: row[0].value,
-              colSpan: 2,
-              styles: { halign: 'center', fontStyle: 'bold', textColor: [33,33,33], fillColor: [245,245,245] }
-            },
-            {
-              content: row[1] + percent, // النتيجة + النسبة
-              styles: {
-                fillColor: color,
-                textColor: [255,255,255],
-                fontStyle: 'bold',
-                halign: 'center'
-              }
-            },
-            { content: "" } // عمود رابع فارغ
-          ];
-        }
-        // الصفوف العادية
-        return row.map((cell, colIdx) => {
+      const body = rowsSansGlobal.map((row) =>
+        row.map((cell, colIdx) => {
           if (colIdx === 3) {
             const isExcedent = cell === 'Excédent';
             const color = isExcedent ? [39, 174, 96] : [231, 76, 60];
@@ -211,12 +182,12 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
           }
           if (colIdx === 4) return { content: "" };
           return { content: cell };
-        });
-      });
+        })
+      );
 
       autoTable(pdf, {
         startY: tableStartY,
-        head: [resultatsTable.columns],
+        head: [resultatsTable.columns.slice(0, 4)],
         body: body,
         styles: { fontSize: 9, halign: 'center', valign: 'middle' },
         theme: 'grid',
@@ -224,6 +195,29 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         margin: { left: 14, right: 14 },
       });
       tableStartY = pdf.lastAutoTable.finalY + 10;
+
+      // --- Résultat Global خارج الجدول ---
+      // ابحث عن صف Résultat Global الأصلي
+      const globalRow = resultatsTable.rows.find(
+        row => row[0] && typeof row[0] === "object" && row[0].value === "Résultat Global"
+      );
+      if (globalRow) {
+        const isExcedent = globalRow[1] === 'Excédent';
+        const color = isExcedent ? [39, 174, 96] : [231, 76, 60];
+        const percent = globalRow[2] ? ` (${globalRow[2]})` : '';
+        pdf.setFontSize(13);
+        pdf.setTextColor(...color);
+        pdf.setFont(undefined, 'bold');
+        pdf.text(
+          `Résultat Global : ${globalRow[1]}${percent}`,
+          pageWidth / 2,
+          tableStartY + 8,
+          { align: 'center' }
+        );
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFont(undefined, 'normal');
+        tableStartY += 16;
+      }
 
       // --- النص التوضيحي أسفل النتائج ---
       pdf.setFontSize(10);
