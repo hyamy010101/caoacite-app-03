@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { calculerBesoinHoraireParSpecialite } from "../utils/calculs";
 
-export default function TableauRepartition({ effectifData, specialties, onDataChange }) {
+export default function TableauRepartitionAjout({ effectifData, specialties, onDataChange }) {
   const findSpecialtyData = (specialite) => {
     return specialties.find(s => s["Spécialité"] === specialite) || {};
   };
@@ -10,30 +10,36 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
     ? effectifData.map(row => ({
         ...row,
         groupes: Number(row.groupes) || 0,
+        groupesAjout: Number(row.groupesAjout) || 0,
         apprenants: Number(row.apprenants) || 0
       }))
-    : [{ specialite: "", groupes: 0, apprenants: 0 }];
+    : [{ specialite: "", groupes: 0, groupesAjout: 0, apprenants: 0 }];
 
-  // ترتيب الأعمدة حسب الطلب: Théorie, Info, TP1, TP2, TP3
+  // يجب جمع groupes و groupesAjout في كل besoin
   const besoinTheorieArr = rows.map(row => {
     const spec = findSpecialtyData(row.specialite);
-    return calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin Théorique par Groupe"] || 0);
+    const totalGroupes = (Number(row.groupes) || 0) + (Number(row.groupesAjout) || 0);
+    return calculerBesoinHoraireParSpecialite(totalGroupes, spec["Besoin Théorique par Groupe"] || 0);
   });
   const besoinInfoArr = rows.map(row => {
     const spec = findSpecialtyData(row.specialite);
-    return calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin Pratique par Groupe"] || 0);
+    const totalGroupes = (Number(row.groupes) || 0) + (Number(row.groupesAjout) || 0);
+    return calculerBesoinHoraireParSpecialite(totalGroupes, spec["Besoin Pratique par Groupe"] || 0);
   });
   const besoinTP1Arr = rows.map(row => {
     const spec = findSpecialtyData(row.specialite);
-    return calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP Spécifique par Groupe"] || 0);
+    const totalGroupes = (Number(row.groupes) || 0) + (Number(row.groupesAjout) || 0);
+    return calculerBesoinHoraireParSpecialite(totalGroupes, spec["Besoin TP Spécifique par Groupe"] || 0);
   });
   const besoinTP2Arr = rows.map(row => {
     const spec = findSpecialtyData(row.specialite);
-    return calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP2 par Groupe"] || 0);
+    const totalGroupes = (Number(row.groupes) || 0) + (Number(row.groupesAjout) || 0);
+    return calculerBesoinHoraireParSpecialite(totalGroupes, spec["Besoin TP2 par Groupe"] || 0);
   });
   const besoinTP3Arr = rows.map(row => {
     const spec = findSpecialtyData(row.specialite);
-    return calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP3 par Groupe"] || 0);
+    const totalGroupes = (Number(row.groupes) || 0) + (Number(row.groupesAjout) || 0);
+    return calculerBesoinHoraireParSpecialite(totalGroupes, spec["Besoin TP3 par Groupe"] || 0);
   });
 
   const sumBesoinTheorie = besoinTheorieArr.reduce((a, b) => a + b, 0);
@@ -76,11 +82,12 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
           <tbody>
             {rows.map((row, idx) => {
               const spec = findSpecialtyData(row.specialite);
-              const besoinTheorie = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin Théorique par Groupe"] || 0);
-              const besoinInfo = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin Pratique par Groupe"] || 0);
-              const besoinTP1 = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP Spécifique par Groupe"] || 0);
-              const besoinTP2 = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP2 par Groupe"] || 0);
-              const besoinTP3 = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP3 par Groupe"] || 0);
+              const totalGroupes = (Number(row.groupes) || 0) + (Number(row.groupesAjout) || 0);
+              const besoinTheorie = calculerBesoinHoraireParSpecialite(totalGroupes, spec["Besoin Théorique par Groupe"] || 0);
+              const besoinInfo = calculerBesoinHoraireParSpecialite(totalGroupes, spec["Besoin Pratique par Groupe"] || 0);
+              const besoinTP1 = calculerBesoinHoraireParSpecialite(totalGroupes, spec["Besoin TP Spécifique par Groupe"] || 0);
+              const besoinTP2 = calculerBesoinHoraireParSpecialite(totalGroupes, spec["Besoin TP2 par Groupe"] || 0);
+              const besoinTP3 = calculerBesoinHoraireParSpecialite(totalGroupes, spec["Besoin TP3 par Groupe"] || 0);
 
               return (
                 <tr key={idx}>
