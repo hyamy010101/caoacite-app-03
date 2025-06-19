@@ -207,25 +207,21 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         const label = `Résultat Global ${arrow}`;
         const resultText = `${globalRow[1]}${percent ? ` (${percent})` : ""}`;
 
-        // إعدادات العرض
-        pdf.setFontSize(9);
-        pdf.setFont(undefined, 'bold');
-        const labelWidth = pdf.getTextWidth(label);
+        // إعدادات المستطيل
         pdf.setFontSize(10);
-        const resultWidth = pdf.getTextWidth(resultText) + 16; // مساحة إضافية للحواف
-        const cellHeight = 9;
-        const totalWidth = labelWidth + 8 + resultWidth;
-        const xStart = (pageWidth - totalWidth) / 2;
-        const y = tableStartY + 6;
+        pdf.setFont(undefined, 'bold');
+        const resultWidth = pdf.getTextWidth(resultText) + 18;
+        const cellHeight = 10;
+        const xResult = (pageWidth - resultWidth) / 2;
+        const y = tableStartY + 8;
 
-        // رسم العنوان (بدون مستطيل)
+        // العنوان في الوسط فوق المستطيل
         pdf.setFontSize(9);
         pdf.setTextColor(0, 0, 0);
         pdf.setFont(undefined, 'bold');
-        pdf.text(label, xStart, y + cellHeight / 2 + 1, { align: 'left' });
+        pdf.text(label, pageWidth / 2, y - 2, { align: 'center' });
 
         // رسم مستطيل النتيجة فقط
-        const xResult = xStart + labelWidth + 8;
         pdf.setFillColor(...bgColor);
         pdf.roundedRect(xResult, y, resultWidth, cellHeight, 2, 2, 'F');
 
@@ -235,15 +231,15 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         pdf.setFont(undefined, 'bold');
         pdf.text(
           resultText,
-          xResult + resultWidth / 2,
-          y + cellHeight / 2 + 1,
+          pageWidth / 2,
+          y + cellHeight / 2 + 3,
           { align: 'center' }
         );
 
         // إعادة الإعدادات الافتراضية
         pdf.setTextColor(0, 0, 0);
         pdf.setFont(undefined, 'normal');
-        tableStartY += cellHeight + 10;
+        tableStartY += cellHeight + 16;
       }
 
       // --- النص التوضيحي أسفل النتائج ---
