@@ -328,6 +328,57 @@ export default function TDP() {
           🗑️ Réinitialiser
         </button>
       </div>
+      <div className="mt-8">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-4">
+          Détails des Besoins par Spécialité
+        </h2>
+        <div className="overflow-x-auto rounded-lg shadow">
+          <table className="min-w-full bg-white border border-gray-200">
+            <thead>
+              <tr>
+                <th>Spécialité</th>
+                {/* <th>Besoin Théorique par Groupe</th>
+                <th>Besoin Pratique par Groupe</th>
+                <th>Besoin TP Spécifique par Groupe</th> */}
+                <th>Besoin Théorique<br />par Spécialité</th>
+                <th>Besoin Pratique<br />par Spécialité</th>
+                <th>Besoin TP Spécifique<br />par Spécialité</th>
+              </tr>
+            </thead>
+            <tbody>
+              {effectif.map((row, idx) => {
+                const spec = row.specialite;
+                const besoinTheoParSpecialite = (row.groupes > 0) ? (row.apprenants / row.groupes).toFixed(2) : 0;
+                const besoinPratParSpecialite = (row.groupes > 0) ? (row.apprenants / row.groupes).toFixed(2) : 0;
+                const besoinTpSpecParSpecialite = (row.groupes > 0) ? (row.apprenants / row.groupes).toFixed(2) : 0;
+
+                return (
+                  <tr key={idx}>
+                    <td>{row.specialite || ""}</td>
+                    {/* <td>{spec["Besoin Théorique par Groupe"]}</td>
+                    <td>{spec["Besoin Pratique par Groupe"]}</td>
+                    <td>{spec["Besoin TP Spécifique par Groupe"]}</td> */}
+                    <td className="text-center">{besoinTheoParSpecialite}</td>
+                    <td className="text-center">{besoinPratParSpecialite}</td>
+                    <td className="text-center">{besoinTpSpecParSpecialite}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td className="font-bold text-right">Moyenne / Somme</td>
+                {/* <td>{avgBesoinTheoParGroupe}</td>
+                <td>{avgBesoinPratParGroupe}</td>
+                <td>{avgBesoinTpSpecParGroupe}</td> */}
+                <td className="text-center font-bold">{somme(effectif.map(e => e.apprenants))}</td>
+                <td className="text-center font-bold">{somme(effectif.map(e => e.apprenants))}</td>
+                <td className="text-center font-bold">{somme(effectif.map(e => e.apprenants))}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

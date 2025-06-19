@@ -263,6 +263,49 @@ export default function TDA() {
         <div className="mb-4">
           <TableauResultats titre="Résultat" data={resultatsData} salles={salles} />
         </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+            <thead>
+              <tr>
+                <th className="p-4 text-left text-gray-700 bg-gray-100 border-b border-gray-200">Spécialité</th>
+                <th className="p-4 text-center text-gray-700 bg-gray-100 border-b border-gray-200">
+                  Besoin Théorique<br />par Spécialité
+                </th>
+                <th className="p-4 text-center text-gray-700 bg-gray-100 border-b border-gray-200">
+                  Besoin Pratique<br />par Spécialité
+                </th>
+                <th className="p-4 text-center text-gray-700 bg-gray-100 border-b border-gray-200">
+                  Besoin TP Spécifique<br />par Spécialité
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {effectif.map((row, idx) => {
+                const spec = specialties.find(s => s.specialite === row.specialite) || {};
+                const besoinTheoParSpecialite = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin Théorique par Groupe"] || 0);
+                const besoinPratParSpecialite = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin Pratique par Groupe"] || 0);
+                const besoinTpSpecParSpecialite = calculerBesoinHoraireParSpecialite(row.groupes || 0, spec["Besoin TP Spécifique par Groupe"] || 0);
+
+                return (
+                  <tr key={idx} className="hover:bg-gray-50">
+                    <td className="p-4 border-b border-gray-200">{row.specialite || ""}</td>
+                    <td className="p-4 text-center border-b border-gray-200">{besoinTheoParSpecialite}</td>
+                    <td className="p-4 text-center border-b border-gray-200">{besoinPratParSpecialite}</td>
+                    <td className="p-4 text-center border-b border-gray-200">{besoinTpSpecParSpecialite}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td className="p-4 font-bold text-right border-t border-gray-200">Moyenne / Somme</td>
+                <td className="p-4 text-center font-bold border-t border-gray-200">{sumBesoinTheoParSpec}</td>
+                <td className="p-4 text-center font-bold border-t border-gray-200">{sumBesoinPratParSpec}</td>
+                <td className="p-4 text-center font-bold border-t border-gray-200">{sumBesoinTpSpecParSpec}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       </div>
       <div className="flex flex-col md:flex-row flex-wrap justify-center gap-4 mt-10">
         <button
