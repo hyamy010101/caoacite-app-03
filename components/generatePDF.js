@@ -249,3 +249,55 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
     pdf.save(`${cleanTitle}_${dateStr}.pdf`);
   });
 }
+/*
+  تحديث: إظهار نسبة التجاوز أو الفائض بجانب النتيجة النهائية بنفس اللون في جدول النتائج.
+  - يفترض أن resultatsTable.rows يحتوي على نسبة التجاوز أو الفائض في عمود إضافي (مثلاً العمود الأخير).
+  - إذا لم يكن موجوداً، يجب تعديل مصدر البيانات ليشمل النسبة.
+  - الكود أدناه يضيف النسبة بجانب النتيجة النهائية بنفس اللون.
+*/
+
+// مثال: إذا كانت النسبة في العمود الرابع (index 4)
+function formatResultCell(result, percent) {
+  if (result === 'Excédent') {
+    return {
+      content: `${result} (${percent})`,
+      styles: {
+        textColor: [39, 174, 96],
+        fontStyle: 'bold'
+      }
+    };
+  } else if (result === 'Dépassement') {
+    return {
+      content: `${result} (${percent})`,
+      styles: {
+        textColor: [231, 76, 60],
+        fontStyle: 'bold'
+      }
+    };
+  }
+  return { content: result };
+}
+
+// لتعديل body الخاص بجدول النتائج:
+const body = resultatsTable.rows.map((row, idx) => {
+  // إذا كان صف دمج الأعمدة
+  if (row[0] && typeof row[0] === "object" && row[0].colSpan === 3) {
+    const percent = row[2] || ''; // النسبة في العمود الثالث (حسب بنية بياناتك)
+    return [
+      {
+        content: row[0].value,
+        colSpan: 3,
+        styles: { halign: 'center', fontStyle: 'bold', textColor: [33,33,33], fillColor: [245,245,245] }
+      },
+      formatResultCell(row[1], percent)
+    ];
+  }
+  // صف عادي
+  return row.map((cell, colIdx) => {
+    if (colIdx === 3) { // عمود النتيجة النهائية
+      const percent = row[4] || ''; // النسبة في العمود الخامس (حسب بنية بياناتك)
+      return formatResultCell(cell, percent);
+    }
+    return { content: cell };
+  });
+});
