@@ -205,14 +205,23 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         const percent = globalRow[2] ? globalRow[2].replace(/^[+-]/, "") : '';
         const resultText = `${globalRow[1]}${percent ? ` (${percent})` : ""}`;
 
-        // جدول من 3 خانات: العنوان | السهم | النتيجة
+        // حساب عرض كل خانة
+        pdf.setFontSize(10);
+        const w1 = pdf.getTextWidth("Résultat Global") + 12;
+        pdf.setFontSize(12);
+        const w2 = pdf.getTextWidth("→") + 12;
+        pdf.setFontSize(11);
+        const w3 = pdf.getTextWidth(resultText) + 16;
+        const tableWidth = w1 + w2 + w3;
+        const pageWidth = pdf.internal.pageSize.getWidth();
+
         autoTable(pdf, {
           startY: tableStartY + 8,
           body: [
             [
-              { content: "Résultat Global", styles: { halign: 'center', fontStyle: 'bold', fontSize: 10 } },
-              { content: "→", styles: { halign: 'center', fontStyle: 'bold', fontSize: 12 } },
-              { content: resultText, styles: { halign: 'center', fontStyle: 'bold', fontSize: 11, textColor: [255,255,255], fillColor: bgColor } }
+              { content: "Résultat Global", styles: { halign: 'center', fontStyle: 'bold', fontSize: 10, cellWidth: w1 } },
+              { content: "→", styles: { halign: 'center', fontStyle: 'bold', fontSize: 12, cellWidth: w2 } },
+              { content: resultText, styles: { halign: 'center', fontStyle: 'bold', fontSize: 11, textColor: [255,255,255], fillColor: bgColor, cellWidth: w3 } }
             ]
           ],
           theme: 'grid',
@@ -222,7 +231,7 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
           },
           tableLineWidth: 0.5,
           tableLineColor: [180, 180, 180],
-          margin: { left: 'center' },
+          margin: { left: (pageWidth - tableWidth) / 2 },
           didDrawCell: (data) => {
             // لا شيء إضافي
           }
