@@ -173,27 +173,26 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
 
       const body = resultatsTable.rows.map((row, idx) => {
         // صف Résultat Global
-        if (row[0] && typeof row[0] === "object" && row[0].colSpan === 3) {
-          // دمج النسبة مع النتيجة النهائية في نفس الخلية وبنفس اللون
+        if (row[0] && typeof row[0] === "object" && row[0].colSpan >= 2) {
           const isExcedent = row[1] === 'Excédent';
           const color = isExcedent ? [39, 174, 96] : [231, 76, 60];
           const percent = row[2] ? ` (${row[2]})` : '';
           return [
             {
               content: row[0].value,
-              colSpan: 3,
+              colSpan: 2,
               styles: { halign: 'center', fontStyle: 'bold', textColor: [33,33,33], fillColor: [245,245,245] }
             },
             {
               content: row[1] + percent, // النتيجة + النسبة
-              colSpan: 2, // دمج الخانتين الأخيرتين
               styles: {
                 fillColor: color,
                 textColor: [255,255,255],
                 fontStyle: 'bold',
                 halign: 'center'
               }
-            }
+            },
+            { content: "" } // عمود رابع فارغ
           ];
         }
         // الصفوف العادية
@@ -201,7 +200,6 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
           if (colIdx === 3) {
             const isExcedent = cell === 'Excédent';
             const color = isExcedent ? [39, 174, 96] : [231, 76, 60];
-            // إضافة النسبة إذا كانت موجودة في الصف (عمود 4)
             const percent = row[4] ? ` (${row[4]})` : '';
             return {
               content: cell + percent,
@@ -211,7 +209,6 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
               }
             };
           }
-          // تجاهل عمود النسبة في الصفوف العادية (لا تظهر إلا في Résultat Global)
           if (colIdx === 4) return { content: "" };
           return { content: cell };
         });
@@ -219,7 +216,7 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
 
       autoTable(pdf, {
         startY: tableStartY,
-        head: [resultatsTable.columns.slice(0, 4)], // عرض 4 أعمدة فقط في الرأس
+        head: [resultatsTable.columns],
         body: body,
         styles: { fontSize: 9, halign: 'center', valign: 'middle' },
         theme: 'grid',
