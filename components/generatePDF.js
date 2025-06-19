@@ -197,7 +197,6 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
       tableStartY = pdf.lastAutoTable.finalY + 10;
 
       // --- Résultat Global خارج الجدول ---
-      // ابحث عن صف Résultat Global الأصلي
       const globalRow = resultatsTable.rows.find(
         row => row[0] && typeof row[0] === "object" && row[0].value === "Résultat Global"
       );

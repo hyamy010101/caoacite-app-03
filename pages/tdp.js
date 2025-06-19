@@ -6,6 +6,13 @@ import TableauResultats from "../components/TableauResultats";
 import useSpecialties from "../components/useSpecialties";
 import { generatePDF } from "../components/generatePDF";
 
+// دالة لحساب النسبة لكل سطر
+function calculerPourcentageLigne(heuresRestantes, heuresDisponibles, etat) {
+  if (!heuresDisponibles || isNaN(heuresRestantes)) return "";
+  const percent = Math.abs(Math.round((heuresRestantes / heuresDisponibles) * 100));
+  return etat === "Excédent" ? `+${percent}%` : `-${percent}%`;
+}
+
 // دوال مساعدة مباشرة
 const moyenne = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
 const somme = arr => arr.reduce((a, b) => a + b, 0);
@@ -102,64 +109,45 @@ export default function TDP() {
 
   const testGlobal = etatTheo === 'Excédent' && etatPrat === 'Excédent' && etatTpSpec === 'Excédent' ? 'Excédent' : 'Dépassement';
 
-  const resultatsData = {
-    totalHeuresTheo,
-    totalHeuresPrat,
-    totalHeuresTpSpec,
-    besoinTheoTotal: repartition.besoinTheoTotal,
-    besoinPratTotal: repartition.besoinPratTotal,
-    besoinTpSpecTotal: repartition.besoinTpSpecTotal,
-    moyenneBesoinTheo: repartition.moyenneTheo,
-    moyenneBesoinPrat: repartition.moyennePrat,
-    moyenneBesoinTpSpec: repartition.moyenneTpSpec,
-    moyenneSurfaceTheo,
-    moyenneSurfacePrat,
-    moyenneSurfaceTpSpec,
-    heuresRestantesTheo,
-    heuresRestantesPrat,
-    heuresRestantesTpSpec,
-    apprenantsPossiblesTheo,
-    apprenantsPossiblesPrat,
-    apprenantsPossiblesTpSpec,
-    etatTheo,
-    etatPrat,
-    etatTpSpec,
-    testGlobal
-  };
+  // حساب النسبة لكل سطر
+  const percentTheo = calculerPourcentageLigne(heuresRestantesTheo, totalHeuresTheo, etatTheo);
+  const percentPrat = calculerPourcentageLigne(heuresRestantesPrat, totalHeuresPrat, etatPrat);
+  const percentTpSpec = calculerPourcentageLigne(heuresRestantesTpSpec, totalHeuresTpSpec, etatTpSpec);
 
-  // حساب نسبة التجاوز أو الفائض
-  const totalBesoin = repartition.besoinTheoTotal + repartition.besoinPratTotal + repartition.besoinTpSpecTotal;
-  const totalRestant = heuresRestantesTheo + heuresRestantesPrat + heuresRestantesTpSpec;
+  // Résultat Global: الأقل (الأكثر سلبية)
+  const percentValues = [percentTheo, percentPrat, percentTpSpec]
+    .filter(p => p !== "")
+    .map(p => Number(p.replace('%','').replace('+','').replace('-','')));
   let percentGlobal = "";
-  if (totalBesoin !== 0) {
-    const percent = Math.abs(Math.round((totalRestant / totalBesoin) * 100));
-    percentGlobal = testGlobal === "Excédent"
-      ? `+${percent}%`
-      : `-${percent}%`;
+  if (percentValues.length) {
+    const min = Math.min(...percentValues);
+    percentGlobal = (testGlobal === "Excédent" ? "+" : "-") + Math.abs(min) + "%";
   }
 
-  // فلترة synthèse des résultats مع الحفاظ على Résultat Global بشكل خاص (colSpan)
   const resultatsRows = [];
   if (moyenneSurfaceTheo > 0)
     resultatsRows.push([
       "Théorique",
       isNaN(heuresRestantesTheo) ? 0 : heuresRestantesTheo,
       isNaN(apprenantsPossiblesTheo) ? 0 : apprenantsPossiblesTheo,
-      etatTheo
+      etatTheo,
+      percentTheo
     ]);
   if (moyenneSurfacePrat > 0)
     resultatsRows.push([
       "Pratique",
       isNaN(heuresRestantesPrat) ? 0 : heuresRestantesPrat,
       isNaN(apprenantsPossiblesPrat) ? 0 : apprenantsPossiblesPrat,
-      etatPrat
+      etatPrat,
+      percentPrat
     ]);
   if (moyenneSurfaceTpSpec > 0)
     resultatsRows.push([
       "TP Spécifiques",
       isNaN(heuresRestantesTpSpec) ? 0 : heuresRestantesTpSpec,
       isNaN(apprenantsPossiblesTpSpec) ? 0 : apprenantsPossiblesTpSpec,
-      etatTpSpec
+      etatTpSpec,
+      percentTpSpec
     ]);
   // Résultat Global: صف خاص بcolSpan = 3 مع النسبة
   resultatsRows.push([
