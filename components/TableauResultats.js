@@ -4,7 +4,7 @@ import {
   calculerApprenantsPossibles,
 } from '../utils/calculs';
 
-export default function TableauResultats({ data }) {
+export default function TableauResultats({ data, titre }) {
   const {
     totalHeuresTheo,
     totalHeuresPrat,
@@ -34,7 +34,6 @@ export default function TableauResultats({ data }) {
   const heuresRestantesTp2 = calculerHeuresRestantes(totalHeuresTp2, besoinTp2Total);
   const heuresRestantesTp3 = calculerHeuresRestantes(totalHeuresTp3, besoinTp3Total);
 
-  // احسب apprenants possibles بشكل صحيح
   const apprenantsPossiblesTheo = calculerApprenantsPossibles(
     heuresRestantesTheo, moyenneBesoinTheo, moyenneSurfaceTheo
   );
@@ -57,7 +56,6 @@ export default function TableauResultats({ data }) {
   const etatTp2 = determinerEtat(heuresRestantesTp2);
   const etatTp3 = determinerEtat(heuresRestantesTp3);
 
-  // اجعل النتيجة العامة Excédent فقط إذا كل القاعات Excédent
   const testGlobal =
     [etatTheo, etatPrat, etatTpSpec, etatTp2, etatTp3].every(e => e === 'Excédent')
       ? 'Excédent'
@@ -108,7 +106,7 @@ export default function TableauResultats({ data }) {
 
   return (
     <div className="bg-white shadow rounded-2xl p-4 mb-8">
-      <h2 className="text-xl font-bold text-gray-700 mb-4">Résultats</h2>
+      <h2 className="text-xl font-bold text-gray-700 mb-4 text-center">{titre || "Résultats"}</h2>
       <div className="table-responsive" style={{ width: "100%", overflowX: "auto" }}>
         <table className="table-compact">
           <thead>
