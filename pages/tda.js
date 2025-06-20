@@ -260,7 +260,7 @@ export default function TDA() {
     rows: resultatsRows
   };
 
-  // فلترة synthèse des salles فقط
+  // فلترة synthèse des salles
   const sallesSummaryRaw = [
     ["Théorie", salles.theorie.length, moyenneSurfaceTheo.toFixed(2), totalHeuresTheo],
     ["Pratique", salles.pratique.length, moyenneSurfacePrat.toFixed(2), totalHeuresPrat],
