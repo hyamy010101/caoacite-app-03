@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { calculerBesoinHoraireParSpecialite } from "../utils/calculs";
 
-export default function TableauRepartitionAjout({ effectifData, specialties, onDataChange }) {
+export default function TableauRepartitionAjout({ effectifData, specialties, onDataChange, titre }) {
   const findSpecialtyData = (specialite) => {
     return specialties.find(s => s["Spécialité"] === specialite) || {};
   };
@@ -66,7 +66,7 @@ export default function TableauRepartitionAjout({ effectifData, specialties, onD
 
   return (
     <div className="bg-white shadow rounded-2xl p-4 mb-8">
-      <h2 className="text-xl font-bold text-gray-700 mb-4">Répartition</h2>
+      <h2 className="text-xl font-bold text-gray-700 mb-4 text-center">{titre || "Répartition"}</h2>
       <div className="table-responsive" style={{ width: "100%", overflowX: "auto" }}>
         <table className="table-compact">
           <thead>

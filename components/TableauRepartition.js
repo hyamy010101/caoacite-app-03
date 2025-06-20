@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { calculerBesoinHoraireParSpecialite } from "../utils/calculs";
+import { calculerBesoinHoraireParSpecialite, sommeColonne } from "../utils/calculs";
 
 export default function TableauRepartition({ effectifData, specialties, onDataChange }) {
   const findSpecialtyData = (specialite) => {
@@ -70,6 +70,14 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
     });
   };
 
+  const totalGroupes = sommeColonne(rows.map(e => e.groupes));
+  const totalGroupesAjout = sommeColonne(rows.map(e => e.groupesAjout));
+  const totalGroupesAll = totalGroupes + totalGroupesAjout;
+
+  const totalApprenants = sommeColonne(rows.map(e => e.apprenants));
+  const totalApprenantsAjout = sommeColonne(rows.map(e => e.apprenantsAjout));
+  const totalApprenantsAll = totalApprenants + totalApprenantsAjout;
+
   return (
     <div className="bg-white shadow rounded-2xl p-4 mb-8">
       <h2 className="text-xl font-bold text-gray-700 mb-4">Répartition</h2>
@@ -114,6 +122,11 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
               <td className="text-center font-bold">{sumBesoinTP1}</td>
               <td className="text-center font-bold">{sumBesoinTP2}</td>
               <td className="text-center font-bold">{sumBesoinTP3}</td>
+            </tr>
+            <tr className="font-bold bg-gray-200">
+              <td style={{ textAlign: "center" }}>Total général</td>
+              <td style={{ textAlign: "center" }} colSpan={2}>{totalGroupesAll}</td>
+              <td style={{ textAlign: "center" }} colSpan={2}>{totalApprenantsAll}</td>
             </tr>
           </tfoot>
         </table>
