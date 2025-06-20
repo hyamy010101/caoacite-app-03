@@ -207,7 +207,6 @@ export function generatePDF({ sallesSummary, apprenantsSummary, resultatsTable }
         const label = "Résultat Global :";
         const pageWidth = pdf.internal.pageSize.getWidth();
 
-        // إعدادات الخط
         const fontSize = 9;
         pdf.setFontSize(fontSize);
         pdf.setFont("helvetica", "bold");
