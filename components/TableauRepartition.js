@@ -58,26 +58,6 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
     sumBesoinTheorie, sumBesoinInfo, sumBesoinTP1, sumBesoinTP2, sumBesoinTP3, onDataChange
   ]);
 
-  const handleRepartitionChange = (repData) => {
-    const r = Array.isArray(repData) && repData.length > 0 ? repData[0] : {};
-    setRepartition({
-      besoinTheoTotal: r.besoinTheorieTotal ?? 0,
-      besoinPratTotal: r.besoinInfoTotal ?? 0,
-      besoinTpSpecTotal: r.besoinTP1Total ?? 0,
-      besoinTp2Total: r.besoinTP2Total ?? 0,
-      besoinTp3Total: r.besoinTP3Total ?? 0,
-      // ... المتوسطات إذا احتجتها ...
-    });
-  };
-
-  const totalGroupes = sommeColonne(rows.map(e => e.groupes));
-  const totalGroupesAjout = sommeColonne(rows.map(e => e.groupesAjout));
-  const totalGroupesAll = totalGroupes + totalGroupesAjout;
-
-  const totalApprenants = sommeColonne(rows.map(e => e.apprenants));
-  const totalApprenantsAjout = sommeColonne(rows.map(e => e.apprenantsAjout));
-  const totalApprenantsAll = totalApprenants + totalApprenantsAjout;
-
   return (
     <div className="bg-white shadow rounded-2xl p-4 mb-8">
       <h2 className="text-xl font-bold text-gray-700 mb-4 text-center">{titre || "Répartition"}</h2>
@@ -122,11 +102,6 @@ export default function TableauRepartition({ effectifData, specialties, onDataCh
               <td className="text-center font-bold">{sumBesoinTP1}</td>
               <td className="text-center font-bold">{sumBesoinTP2}</td>
               <td className="text-center font-bold">{sumBesoinTP3}</td>
-            </tr>
-            <tr className="font-bold bg-gray-200">
-              <td style={{ textAlign: "center" }}>Total général</td>
-              <td style={{ textAlign: "center" }} colSpan={2}>{totalGroupesAll}</td>
-              <td style={{ textAlign: "center" }} colSpan={2}>{totalApprenantsAll}</td>
             </tr>
           </tfoot>
         </table>
